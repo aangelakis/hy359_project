@@ -1,0 +1,17 @@
+<div id="login_form">
+    <form id="loginForm" name="loginForm" onsubmit="loginPOST(); return false">
+        <header>
+            <h1> Login Form</h1><br>
+        </header>
+        <div class="row">
+            <label for="username">Username:</label>
+            <input type="text"  id="login_username" class="form-control" name="username" placeholder="Username" required><br>
+        </div>
+        <div class="row">
+            <label for="password">Password:</label><br>
+            <input type="password"  name="password" class="form-control" id="login_password" placeholder="Password" required>
+        </div>
+        <br><input type="submit" class="btn btn-danger" value="Login">
+    </form>
+    <div id="login_error"></div>
+</div>

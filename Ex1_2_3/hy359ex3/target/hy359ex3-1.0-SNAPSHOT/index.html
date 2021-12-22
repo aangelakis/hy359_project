@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+        <link rel="stylesheet" href="css/style.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+              integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        <meta name="Author" content="Alexandros Angelakis">
+        <meta name="Description" content="Alexandros Angelakis' webpage">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="keywords" lang="en"
+              content="Alexandros Angelakis, CSD, UOC, Computer Science, CS, Undergraduate, csd4334, csd, angelakis">
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <script type="text/javascript" src="js/idk.js"></script>
+        <script type="text/javascript" src="js/ajax.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <title>Registration form</title>
+    </head>
+
+    <body onload="isLoggedIn()">
+        <div id="login" style=" margin: auto;
+             text-align: center;
+             box-shadow: 0px 0px 40px 40px hsla(0, 0%, 100%, 0.534);
+             background: rgba(255, 255, 255, 0.787);"
+             class="square rounded p-5 container mt-md-5">
+            <h2>If you want to login or register click here.</h2>
+            <button class="btn btn-info" onclick="show_login()">Login</button>
+            <button class="btn btn-info" onclick="show_register()">Register</button>
+
+        </div>
+
+        <div id="ajax_form" style=" margin: auto;
+             text-align: center;
+             box-shadow: 0px 0px 40px 40px hsla(0, 0%, 100%, 0.534);
+             background: rgba(255, 255, 255, 0.787);"
+             class="square rounded p-5 container mt-md-5">
+
+        </div>
+
+        <div id="ajax_update" style=" margin: auto;
+             text-align: center;
+             box-shadow: 0px 0px 40px 40px hsla(0, 0%, 100%, 0.534);
+             background: rgba(255, 255, 255, 0.787);"
+            class="square rounded p-5 container mt-md-5">
+                 
+        </div>
+
+
+    </body>
+
+</html>
