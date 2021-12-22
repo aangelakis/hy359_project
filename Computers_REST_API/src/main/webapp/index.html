@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <script src="ajaxREST.js" defer></script>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+</head>
+
+<body>
+
+<div id="demo">
+<h2>Test REST</h2>
+        <div class="row">
+		
+		
+            <div class="column column1Width" id="choices" style="background-color:#ADD8E6;"> 
+            <h3> POST Request</h3>
+        <form id="myForm" name="myForm" onsubmit='addBloodTest();return false;'>
+            <label for='amka'>Amka:</label>
+            <input id='amka' type="text" name='amka' required><br>
+            <label for='test_date'>Test Date:</label>
+            <input id='test_date' type="date" name='test_date' required><br>
+            <label for='medical_center'>Medical_center:</label>
+            <input id='medical_center' type="text" name='medical_center' required><br>
+            <label for='blood_sugar'>Blood_sugar:</label>
+            <input id='blood_sugar' type="text" name='blood_sugar'  ><br>
+            <label for='cholesterol'>Cholesterol:</label>
+            <input id='cholesterol' type="text" name='cholesterol' ><br>
+            <label for='iron'>Iron:</label>
+            <input id='iron' type="text" name='iron'  ><br>
+            <label for='vitamin_d3'>Vitamin_d3:</label>
+            <input id='vitamin_d3' type="text" name='vitamin_d3'  ><br>
+            <label for='vitamin_b12'>Vitamin_b12:</label>
+            <input id='vitamin_b12' type="text" name='vitamin_b12' ><br>
+            <input type='submit' class="button" value="Add Bloodtest"> <!-- Press this to submit form -->
+        </form>
+
+			<h3> GET Request 1</h3>
+                        <label for="amka2">Amka:</label>
+                        <input id="amka2" name="amka2" type="text"><br>
+			<button type="button" onclick="getBloodTest()" class="button">Get BloodTest</button> <br>
+                        
+			<h3> GET Request 2</h3><br>
+                        <label for="amka_measure">Amka:</label>
+                        <input id="amka_measure" type="text"><br>
+			<label for='measure'>Measure:</label>
+			<input id="measure" type="text"><br>
+                        <button type="button" onclick="getBloodTestWithMeasure()" class="button" >Get Measure of patient</button>
+            
+			
+			<h3> PUT Request</h3>
+			<label for='bloodtestid'>BloodTest ID:</label>
+			<input id='bloodtestid' type="text" name='bloodtestid'><br>
+			<label for='measure2'>Measure:</label>
+                        <input id='measure2' type="text" name='measure2'><br>
+                        <label for='value'>Value:</label>
+                        <input id='value' type="number" name='value'><br>
+			<button type="button" onclick="updateBloodTest()" class="button">Update BloodTest</button>
+			
+			<h3> DELETE Request</h3>
+			<label for='bloodtestid_2'>BloodTest ID:</label>
+			<input id='bloodtestid_2' type="text" name='bloodtestid_2'><br>
+			<button type="button" onclick="deleteBloodTest()" class="button">Delete BloodTest</button>
+			
+			
+			</div>
+                <div class="column column2Width" id="output" style="background-color:#fffff0;">
+                <h2>Output</h2>
+                <div id="msg"></div>
+                  
+            </div>
+			
+        </div>
+
+</div>
+</body>
+</html>
