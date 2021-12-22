@@ -8,11 +8,11 @@ package database.tables;
 import mainClasses.BloodTest;
 import com.google.gson.Gson;
 import database.DB_Connection;
-import mainClasses.SimpleUser;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -62,6 +62,94 @@ public class EditBloodTestTable {
             System.err.println(e.getMessage());
         }
         return null;
+    }
+
+    public BloodTest databaseToBloodTest_amka(String amka) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+
+        ResultSet rs;
+        try {
+            rs = stmt.executeQuery("SELECT * FROM bloodtest WHERE amka= '" + amka + "'");
+            rs.next();
+            String json = DB_Connection.getResultsToJSON(rs);
+            Gson gson = new Gson();
+            BloodTest bt = gson.fromJson(json, BloodTest.class);
+            return bt;
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public BloodTest databaseToBloodTest_id(int bloodtest_id) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+
+        ResultSet rs;
+        try {
+            rs = stmt.executeQuery("SELECT * FROM bloodtest WHERE bloodtest_id= '" + bloodtest_id + "'");
+            rs.next();
+            String json = DB_Connection.getResultsToJSON(rs);
+            Gson gson = new Gson();
+            BloodTest bt = gson.fromJson(json, BloodTest.class);
+            return bt;
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public void updateBloodTest_chol(int id, double chol) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        BloodTest bt = new BloodTest();
+        bt.setCholesterol(chol);
+        bt.setCholesterol_level();
+        String update = "UPDATE bloodtest SET cholesterol='" + chol + "', cholesterol_level='" + bt.getCholesterol_level() + "' WHERE bloodtest_id = '" + id + "'";
+        stmt.executeUpdate(update);
+    }
+
+    public void updateBloodTest_bloodSugar(int id, double blood_sugar) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        BloodTest bt = new BloodTest();
+        bt.setBlood_sugar(blood_sugar);
+        bt.setBlood_sugar_level();
+        String update = "UPDATE bloodtest SET blood_sugar='" + blood_sugar + "', blood_sugar_level='" + bt.getBlood_sugar_level() + "' WHERE bloodtest_id = '" + id + "'";
+        stmt.executeUpdate(update);
+    }
+
+    public void updateBloodTest_iron(int id, double iron) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        BloodTest bt = new BloodTest();
+        bt.setIron(iron);
+        bt.setIron_level();
+        String update = "UPDATE bloodtest SET iron='" + iron + "', iron_level='" + bt.getIron_level() + "' WHERE bloodtest_id = '" + id + "'";
+        stmt.executeUpdate(update);
+    }
+
+    public void updateBloodTest_vitamin_d3(int id, double vitamin_d3) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        BloodTest bt = new BloodTest();
+        bt.setVitamin_d3(vitamin_d3);
+        bt.setVitamin_d3_level();
+        String update = "UPDATE bloodtest SET vitamin_d3='" + vitamin_d3 + "', vitamin_d3_level='" + bt.getVitamin_d3_level() + "' WHERE bloodtest_id = '" + id + "'";
+        stmt.executeUpdate(update);
+    }
+
+    public void updateBloodTest_vitamin_b12(int id, double vitamin_b12) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        BloodTest bt = new BloodTest();
+        bt.setVitamin_b12(vitamin_b12);
+        bt.setVitamin_b12_level();
+        String update = "UPDATE bloodtest SET vitamin_b12='" + vitamin_b12 + "', vitamin_b12_level='" + bt.getVitamin_b12_level() + "' WHERE bloodtest_id = '" + id + "'";
+        stmt.executeUpdate(update);
     }
     
        public void updateBloodTest(int id,double chol) throws SQLException, ClassNotFoundException{
@@ -150,5 +238,27 @@ public class EditBloodTestTable {
         } catch (SQLException ex) {
             Logger.getLogger(EditBloodTestTable.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public ArrayList<BloodTest> databaseToBloodTests() throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        ArrayList<BloodTest> BloodTests = new ArrayList<BloodTest>();
+        ResultSet rs;
+        try {
+            rs = stmt.executeQuery("SELECT * FROM bloodtest");
+            while (rs.next()) {
+                String json = DB_Connection.getResultsToJSON(rs);
+                Gson gson = new Gson();
+                BloodTest bt = gson.fromJson(json, BloodTest.class);
+                BloodTests.add(bt);
+
+            }
+            return BloodTests;
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+        return null;
     }
 }
