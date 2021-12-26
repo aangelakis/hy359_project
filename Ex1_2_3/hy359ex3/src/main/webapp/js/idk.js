@@ -335,7 +335,6 @@ function loadDoc() {
                     document.getElementById("map").disabled = false;
                 }
 
-
             }
         }
     });

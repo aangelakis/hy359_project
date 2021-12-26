@@ -15,6 +15,7 @@
         <script type="text/javascript" src="js/idk.js"></script>
         <script type="text/javascript" src="js/ajax.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src='http://www.openlayers.org/api/OpenLayers.js'></script>
         <title>Registration form</title>
     </head>
 
@@ -27,7 +28,7 @@
             <h2>If you want to login or register click here.</h2>
             <button class="btn btn-info" onclick="show_login()">Login</button>
             <button class="btn btn-info" onclick="show_register()">Register</button>
-
+            <button class="btn btn-info" onclick="getAllDoctors()">Find Doctors</button>
         </div>
 
         <div id="ajax_form" style=" margin: auto;
@@ -42,9 +43,20 @@
              text-align: center;
              box-shadow: 0px 0px 40px 40px hsla(0, 0%, 100%, 0.534);
              background: rgba(255, 255, 255, 0.787);"
-            class="square rounded p-5 container mt-md-5">
-                 
+             class="square rounded p-5 container mt-md-5">
+
         </div>
+
+        <footer>
+            <a href="https://www.vrisko.gr/efimeries-farmakeion/irakleio" target="_blank"><img src="https://www.vrisko.gr/graphlink/Pharmacies/image/300x60_Banner_n/?Region=irakleio&NativeRegion=%ce%97%cf%81%ce%ac%ce%ba%ce%bb%ce%b5%ce%b9%ce%bf&" border="0" alt="Εφημερεύοντα Φαρμακεία Ηράκλειο" /></a>
+            <a href="https://www.vrisko.gr/efimeries-nosokomeion?SelectedCity=hrakleio" target="_blank"><img src="https://www.vrisko.gr/graphlink/Hospitals/image/300x60_Banner_n/?Prefecture=hrakleio&NativePrefecture=%ce%97%ce%a1%ce%91%ce%9a%ce%9b%ce%95%ce%99%ce%9f&" border="0" alt="Εφημερεύοντα Νοσοκομεία ΗΡΑΚΛΕΙΟ" /></a>
+            <a href="https://www.ekab.gr/files/entypa/EKAB-protes-voithies.pdf" target="_blank"><img src="images/first-aid-logo.jpg" style="height:60px; width:100px" border="0" alt="Πρώτες Βοήθειες"/></a>
+            <a href="https://www.venizeleio.gr/" target="_blank"><img src="images/venizeleio.png" style="height:60px; width:250px" border="0" alt="Βενιζέλειο Νοσοκομείο Ηρακλείου"/></a>
+            <a href="https://www.pagni.gr/" target="_blank"><img src="images/pagni.jpg" style="height:60px; width:150px" border="0" alt="ΠΑΓΝΗ"/></a>
+            <a href="https://covid19.gov.gr/" target="_blank"><img src="images/covid-19.png" style="height:60px; width:300px" border="0" alt="covid-19-info"/></a>
+
+        </footer>
+
 
 
     </body>

@@ -40,6 +40,10 @@
         <servlet-name>Update_Simple_User</servlet-name>
         <servlet-class>Servlets.Update_Simple_User</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>getAllDoctors</servlet-name>
+        <servlet-class>Servlets.getAllDoctors</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Register</servlet-name>
         <url-pattern>/Register</url-pattern>
@@ -79,6 +83,10 @@
     <servlet-mapping>
         <servlet-name>Update_Simple_User</servlet-name>
         <url-pattern>/Update_Simple_User</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>getAllDoctors</servlet-name>
+        <url-pattern>/getAllDoctors</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

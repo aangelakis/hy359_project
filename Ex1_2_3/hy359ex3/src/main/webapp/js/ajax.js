@@ -162,7 +162,7 @@ function getBmi() {
             $('#ajax_form').html("<h1>Your BMI is: " + responseData.data.bmi + "</h1>");
             $('#ajax_form').append("<h3>You are " + responseData.data.health + ". Your healthy BMI range is: " + responseData.data.healthy_bmi_range + "</h3>");
             $("#ajax_form").show();
-            $("#ajax_update").hide();  
+            $("#ajax_update").hide();
         }
     });
 
@@ -225,6 +225,104 @@ function getCertifiedDoctors() {
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send();
 }
+
+var doc_lat = [];
+var doc_lon = [];
+var doc_names = [];
+
+function getAllDoctors() {
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            const responseData = JSON.parse(xhr.responseText);
+            $('#ajax_update').hide();
+            $('#ajax_form').html("<h1>Doctors</h1> <button id='show_map' class='btn btn-dark' onclick='showMap()'>Show on map</button><br><div id='Map_doc' style='display: none; height:600px; width:100%; border:1px solid'></div>");
+
+            for (let doctor in responseData) {
+                var json = {};
+                for (let x in responseData[doctor]) {
+
+                    if (x == 'lat') {
+                        doc_lat.push(responseData[doctor][x]);
+                    }
+
+                    if (x == 'lon') {
+                        doc_lon.push(responseData[doctor][x]);
+                    }
+
+                    if (x == 'lastname') {
+                        doc_names.push(responseData[doctor][x]);
+                    }
+
+                    if (x == 'firstname' || x == 'lastname' || x == 'address' || x == 'city' || x == 'doctor_info' || x == 'specialty' || x == 'telephone') {
+                        json[x] = responseData[doctor][x];
+                    }
+                }
+                console.log(json);
+                $('#ajax_form').append(createTableFromJSON(json));
+                $('#ajax_form').show();
+            }
+        } else if (xhr.status !== 200) {
+            alert('Request failed. Returned status of ' + xhr.status);
+        }
+    };
+
+    xhr.open('GET', 'getAllDoctors');
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.send();
+}
+
+/* Function that shows the map. */
+function showMap() {
+    var position;
+
+    document.getElementById("Map_doc").style.display = "block";
+    document.getElementById("show_map").disabled = true;
+    
+    map = new OpenLayers.Map("Map_doc");
+    mapnik = new OpenLayers.Layer.OSM();
+    map.addLayer(mapnik);
+
+    markers = new OpenLayers.Layer.Markers("Markers");
+    map.addLayer(markers);
+
+    for (var i = 0; i < doc_lat.length; i++) {
+        position = setPosition(doc_lat[i], doc_lon[i]);
+
+        mar = new OpenLayers.Marker(position);
+        markers.addMarker(mar);
+
+        mar.events.register('mousedown', mar, function (evt) {
+            handler(position, doc_names[i]);
+        });
+        
+    }
+    
+    //Orismos zoom
+    const zoom = 11;
+    map.setCenter(position, zoom);
+}
+
+
+/* Functions that returns the position. */
+function setPosition(lat, lon) {
+    var fromProjection = new OpenLayers.Projection("EPSG:4326"); // Transform from WGS 1984
+    var toProjection = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
+    var position = new OpenLayers.LonLat(lon, lat).transform(fromProjection,
+            toProjection);
+    return position;
+}
+
+/* When a marker is clicked */
+function handler(position, message) {
+    var popup = new OpenLayers.Popup.FramedCloud("Popup",
+            position, null,
+            message, null,
+            true // <-- true if we want a close (X) button, false otherwise
+            );
+    map.addPopup(popup);
+}
+
 
 
 function username_check() {
