@@ -1,0 +1,52 @@
+<div id="form">
+
+    <header>
+        <h1>Submit your bloodtest</h1><br>
+    </header>
+
+    <form id="bloodtestForm" name="myForm" onsubmit='addBloodTest();return false;'>
+        <div class="row">
+            <div class="form-group col-md-6 col-xs-12">
+                <label for='name'>AMKA:</label>
+                <input id='name' type='text' name='amka' class="form-control" required><br>
+            </div>
+            <div class="form-group col-md-6 col-xs-12">
+                <label for='brand'>Test Date:</label>
+                <input id='brand' type="text" name='test_date' class="form-control" required><br>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-6 col-xs-12">
+                <label for='core'>Medical Center:</label>
+                <input id='core' type="text" name='medical_center' class="form-control" required><br>
+            </div>
+            <div class="form-group col-md-6 col-xs-12">
+                <label for='memory'>Vitamin D3:</label>
+                <input id='memory' type="number" class="form-control" name='vitamin_d3'><br>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-6 col-xs-12">
+                <label for='quantity'>Vitamin B12:</label>
+                <input id='quantity' type="number" class="form-control" name='vitamin_b12'><br>
+            </div>
+            <div class="form-group col-md-6 col-xs-12">
+                <label for='quantity'>Cholesterol:</label>
+                <input id='quantity' type="number" class="form-control" name='cholesterol'><br>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-6 col-xs-12">
+                <label for='quantity'>Blood Sugar:</label>
+                <input id='quantity' type="number" class="form-control" name='blood_sugar'><br>
+            </div>
+            <div class="form-group col-md-6 col-xs-12">
+                <label for='quantity'>Iron:</label>
+                <input id='quantity' type="number" class="form-control" name='iron'><br>
+            </div>
+        </div>
+        <input type='submit' class="btn btn-dark" value="Add BloodTest"> <!-- Press this to submit form -->
+        <div id="msg">
+        </div>
+    </form>
+</div>

@@ -142,9 +142,45 @@ function showUpdateForm() {
     document.getElementById("telephone").value = data["telephone"];
     document.getElementById("bloodtype").value = data["bloodtype"];
 
-
-
 }
+
+function showBloodTestForm(){
+    $("#ajax_update").hide();
+    $("#ajax_form").load("BloodTestForm.html");
+    $("ajax_form").show();
+}
+
+function addBloodTest() {
+    let myForm = document.getElementById('bloodtestForm');
+    let formData = new FormData(myForm);
+    const data = {};
+    formData.forEach((value, key) => (data[key] = value));
+    for(var key in data){
+        if(data[key] == ""){
+            delete data[key];
+        }
+    }
+
+    var jsonData = JSON.stringify(data);
+    console.log(jsonData);
+
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            document.getElementById('msg').innerHTML = JSON.stringify(xhr.responseText);
+
+        } else if (xhr.status !== 200) {
+            document.getElementById('msg')
+                .innerHTML = 'Request failed. Returned status of ' + xhr.status + "<br>" +
+                JSON.stringify(xhr.responseText);
+
+        }
+    };
+    xhr.open('POST', 'http://localhost:8080/hy359ex3/bloodtests/tests/newBloodTest');
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.send(jsonData);
+}
+
 
 function getBmi() {
     const data1 = null;
