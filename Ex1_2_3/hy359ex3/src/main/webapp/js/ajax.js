@@ -18,16 +18,25 @@ function loginPOST() {
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            //setChoicesForLoggedUser();
-            $("#login").load("choices1.html");
+            console.log(xhr.responseText);
+            if(xhr.responseText === "user") {
+                $("#login").load("choices1.html");
+            }else{
+                $("#login").load("choicesDoctor.html");
+            }
             $("#ajax_update").load("update.html");
             $("#ajax_update").hide();
             $("#ajax_form").html("<h1>Successful Login</h1><br>");
 
         } else if (xhr.status !== 200) {
-
-            $("#login_error").html("Wrong Credentials");
-            //('Request failed. Returned status of ' + xhr.status);
+            console.log(xhr.responseText);
+            if(xhr.responseText === "user") {
+                $("#login_error").html("Wrong Credentials");
+            }else if(xhr.responseText === "not certified"){
+                $("#login_error").html("Not Certified");
+            }else{
+                $("#login_error").html("Wrong Credentials");
+            }
         }
     };
     var data = $('#loginForm').serialize();
@@ -42,11 +51,17 @@ function isLoggedIn() {
         if (xhr.readyState === 4 && xhr.status === 200) {
             const responseData = JSON.parse(xhr.responseText);
             console.log(responseData);
-            $("#login").load("choices1.html");
-            $("#ajax_update").load("update.html");
-            $("#ajax_update").hide();
-            //$("#ajax_form").load("user.html");
-            $("#ajax_form").html("<h1>Welcome back " + responseData.username + "</h1>");
+            if(responseData.doctor_id === undefined) {
+                $("#login").load("choices1.html");
+                $("#ajax_update").load("update.html");
+                $("#ajax_update").hide();
+                $("#ajax_form").html("<h1>Welcome back " + responseData.username + "</h1>");
+            }else{
+                $("#login").load("choicesDoctor.html");
+                $("#ajax_update").load("update.html");
+                $("#ajax_update").hide();
+                $("#ajax_form").html("<h1>Welcome back " + responseData.username + "</h1>");
+            }
         } else if (xhr.status !== 200) {
             $("#ajax_update").hide();
             $("#ajax_form").hide();
@@ -112,6 +127,30 @@ function getDataRequest() {
             document.getElementById("change").disabled = false;
 
             // $("#myForm").hide();
+        } else if (xhr.status !== 200) {
+            alert('Request failed. Returned status of ' + xhr.status);
+        }
+    };
+
+    xhr.open('GET', 'Login');
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.send();
+}
+
+function getDoctorDataRequest() {
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            const responseData = JSON.parse(xhr.responseText);
+            data = responseData;
+
+            delete responseData["user_id"];
+            $('#ajax_form').html("<h1>Your Data</h1>");
+            $('#ajax_form').append(createTableFromJSON(responseData));
+            $("#ajax_form").show();
+            $("#ajax_update").hide();
+            document.getElementById("change").disabled = false;
+
         } else if (xhr.status !== 200) {
             alert('Request failed. Returned status of ' + xhr.status);
         }

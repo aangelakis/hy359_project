@@ -76,20 +76,17 @@ public class Login extends HttpServlet {
             throws ServletException, IOException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+        int flag = 0;
         String JSON_user;
         EditSimpleUserTable eut = new EditSimpleUserTable();
+        EditDoctorTable edt = new EditDoctorTable();
         HttpSession session = request.getSession(true);
         try {
             if ((JSON_user = eut.databaseUserToJSON(username, password)) != null) {
+                response.getWriter().write("user");
                 session.setAttribute("loggedIn", JSON_user);
-
-                /* int activeUsers = 0;
-                if (request.getServletContext().getAttribute("activeUsers") != null) {
-                    activeUsers = (int) request.getServletContext().getAttribute("activeUsers");
-                }
-                request.getServletContext().setAttribute("activeUsers", activeUsers + 1);
-                 */
                 response.setStatus(200);
+                flag = 1;
 
             } else {
                 response.setStatus(403);
@@ -98,6 +95,26 @@ public class Login extends HttpServlet {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        if (flag == 0) {
+            try {
+                if ((JSON_user = edt.databaseToJSON_Certified(username, password)) != null) {
+                    response.getWriter().write("doc");
+                    session.setAttribute("loggedIn", JSON_user);
+                    response.setStatus(200);
+                } else if ((JSON_user = edt.databaseToJSON(username, password)) != null) {
+                    response.getWriter().write("not certified");
+                    response.setStatus(403);
+                } else {
+                    response.getWriter().write("wrong credentials");
+                    response.setStatus(403);
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
