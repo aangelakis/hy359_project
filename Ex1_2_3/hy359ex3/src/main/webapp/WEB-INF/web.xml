@@ -52,6 +52,18 @@
         <servlet-name>CertifyDoctors</servlet-name>
         <servlet-class>Servlets.CertifyDoctors</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>getAllUsers</servlet-name>
+        <servlet-class>Servlets.getAllUsers</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteUsers</servlet-name>
+        <servlet-class>Servlets.DeleteUsers</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteDoctors</servlet-name>
+        <servlet-class>Servlets.DeleteDoctors</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Register</servlet-name>
         <url-pattern>/Register</url-pattern>
@@ -103,6 +115,18 @@
     <servlet-mapping>
         <servlet-name>CertifyDoctors</servlet-name>
         <url-pattern>/CertifyDoctors</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>getAllUsers</servlet-name>
+        <url-pattern>/getAllUsers</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteUsers</servlet-name>
+        <url-pattern>/DeleteUsers</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteDoctors</servlet-name>
+        <url-pattern>/DeleteDoctors</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

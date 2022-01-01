@@ -113,12 +113,93 @@ function createTableFromJSONCertify(data) {
         html += "<tr><td>" + category + "</td><td>" + value + "</td></tr>";
     }
     html += "</table>";
-    html += "<button class='btn btn-dark' id='" +data['doctor_id'] + "' onclick='certifyDoctor("+data['doctor_id']+")'> Certify Doctor " + data['lastname'] + "</button>";
-    html += "<div id='"+data['doctor_id']+"'></div>";
+    html += "<button class='btn btn-dark' id='" + data['doctor_id'] + "' onclick='certifyDoctor(" + data['doctor_id'] + ")'> Certify Doctor " + data['lastname'] + "</button>";
+    html += "<div id='" + data['doctor_id'] + "'></div>";
     html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
     return html;
 }
 
+function createTableFromJSONDeleteUser(data) {
+    var html = "<table class=" + "table table-dark" + "><tr><th>Category</th><th>Value</th></tr>";
+    for (const x in data) {
+        var category = x;
+        var value = data[x];
+        html += "<tr><td>" + category + "</td><td>" + value + "</td></tr>";
+    }
+    html += "</table>";
+    html += "<button class='btn btn-dark' id='" + data['user_id'] + "' onclick='deleteUser(" + data['user_id'] + ")'> Delete user " + data['username'] + "</button>";
+
+    html += "<div id='" + data['user_id'] + "'></div>";
+    html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
+    return html;
+}
+
+function createTableFromJSONDeleteDoctor(data) {
+    var html = "<table class=" + "table table-dark" + "><tr><th>Category</th><th>Value</th></tr>";
+    for (const x in data) {
+        var category = x;
+        var value = data[x];
+        html += "<tr><td>" + category + "</td><td>" + value + "</td></tr>";
+    }
+    html += "</table>";
+    html += "<button class='btn btn-dark' id='" + data['doctor_id'] + "' onclick='deleteDoctor(" + data['doctor_id'] + ")'> Delete doctor " + data['lastname'] + "</button>";
+
+    html += "<div id='" + data['doctor_id'] + "'></div>";
+    html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
+    return html;
+}
+
+
+function deleteDoctor(id) {
+    var xhr = new XMLHttpRequest();
+
+    xhr.onload = function () {
+        console.log(xhr.responseText);
+        const responseData = JSON.parse(xhr.responseText);
+
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            document.getElementById(responseData['doctor_id']).disabled = "true";
+            document.getElementById(responseData['doctor_id']).innerHTML = "Doctor " + responseData['lastname'] + " successfully deleted";
+        } else {
+            document.getElementById(responseData['doctor_id']).innerHTML = "There was an error deleting doctor " + responseData['lastname'];
+        }
+    };
+
+    let text = {};
+    text["id"] = id;
+    var JSONdata = JSON.stringify(text);
+    console.log(JSONdata);
+
+    xhr.open('POST', 'DeleteDoctors');
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.send(JSONdata);
+}
+
+
+function deleteUser(id) {
+    var xhr = new XMLHttpRequest();
+
+    xhr.onload = function () {
+        console.log(xhr.responseText);
+        const responseData = JSON.parse(xhr.responseText);
+
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            document.getElementById(responseData['user_id']).disabled = "true";
+            document.getElementById(responseData['user_id']).innerHTML = "User " + responseData['username'] + " successfully deleted";
+        } else {
+            document.getElementById(responseData['user_id']).innerHTML = "There was an error deleting user " + responseData['username'];
+        }
+    };
+
+    let text = {};
+    text["id"] = id;
+    var JSONdata = JSON.stringify(text);
+    console.log(JSONdata);
+
+    xhr.open('POST', 'DeleteUsers');
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.send(JSONdata);
+}
 
 
 function certifyDoctor(id) {
@@ -127,20 +208,17 @@ function certifyDoctor(id) {
     xhr.onload = function () {
         console.log(xhr.responseText);
         const responseData = JSON.parse(xhr.responseText);
-        
+
         if (xhr.readyState === 4 && xhr.status === 200) {
             document.getElementById(responseData['doctor_id']).disabled = "true";
             document.getElementById(responseData['doctor_id']).innerHTML = "Doctor " + responseData['lastname'] + " successfully certified";
-            //$("'#" + responseData['doctor_id'] + "'").html("Doctor " + responseData['lastname'] + " successfully certified");
         } else {
-            //$('#username').html("There was an error certifying doctor " + responseData['lastname']);
+            document.getElementById(responseData['doctor_id']).innerHTML = "There was an error certifying doctor " + responseData['lastname'];
         }
-
     };
 
     let text = {};
     text["id"] = id;
-    //const obj = JSON.parse(text); 
     var JSONdata = JSON.stringify(text);
     console.log(JSONdata);
 
@@ -340,6 +418,61 @@ function getUncertifiedDoctors() {
     };
 
     xhr.open('GET', 'getUncertifiedDoctors');
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.send();
+}
+
+function getAllUsersAdmin() {
+
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            const responseData = JSON.parse(xhr.responseText);
+            $('#ajax_update').hide();
+            $('#ajax_form').html("<h1>Users</h1>");
+            for (let user in responseData) {
+                var json = {};
+                for (let x in responseData[user]) {
+                    json[x] = responseData[user][x];
+                }
+                console.log(json);
+                $('#ajax_form').append(createTableFromJSONDeleteUser(json));
+                $('#ajax_form').show();
+            }
+        } else if (xhr.status !== 200) {
+            alert('Request failed. Returned status of ' + xhr.status);
+        }
+    };
+
+    xhr.open('GET', 'getAllUsers');
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.send();
+}
+
+
+
+function getAllDoctorsAdmin() {
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            const responseData = JSON.parse(xhr.responseText);
+            $('#ajax_update').hide();
+            $('#ajax_form').html("<h1>Doctors</h1>");
+            for (let doctor in responseData) {
+                var json = {};
+                for (let x in responseData[doctor]) {
+                    json[x] = responseData[doctor][x];
+                }
+                console.log(json);
+                $('#ajax_form').append(createTableFromJSONDeleteDoctor(json));
+                $('#ajax_form').show();
+            }
+        } else if (xhr.status !== 200) {
+            alert('Request failed. Returned status of ' + xhr.status);
+        }
+    };
+
+    xhr.open('GET', 'getAllDoctors');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send();
 }
