@@ -53,7 +53,6 @@ public class Login extends HttpServlet {
         HttpSession session = request.getSession();
         String JSON_user = (String) session.getAttribute("loggedIn");
 
-
         if (JSON_user != null) {
             response.setStatus(200);
             response.getWriter().write(JSON_user);
@@ -83,7 +82,12 @@ public class Login extends HttpServlet {
         HttpSession session = request.getSession(true);
         try {
             if ((JSON_user = eut.databaseUserToJSON(username, password)) != null) {
-                response.getWriter().write("user");
+                /* If the user is the admin */
+                if (username.equals("admin") && password.equals("admin12*")) {
+                    response.getWriter().write("admin");
+                } else {
+                    response.getWriter().write("user");
+                }
                 session.setAttribute("loggedIn", JSON_user);
                 response.setStatus(200);
                 flag = 1;

@@ -44,6 +44,14 @@
         <servlet-name>getAllDoctors</servlet-name>
         <servlet-class>Servlets.getAllDoctors</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>getUncertifiedDoctors</servlet-name>
+        <servlet-class>Servlets.getUncertifiedDoctors</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CertifyDoctors</servlet-name>
+        <servlet-class>Servlets.CertifyDoctors</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Register</servlet-name>
         <url-pattern>/Register</url-pattern>
@@ -87,6 +95,14 @@
     <servlet-mapping>
         <servlet-name>getAllDoctors</servlet-name>
         <url-pattern>/getAllDoctors</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>getUncertifiedDoctors</servlet-name>
+        <url-pattern>/getUncertifiedDoctors</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CertifyDoctors</servlet-name>
+        <url-pattern>/CertifyDoctors</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

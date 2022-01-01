@@ -48,6 +48,13 @@ public class EditDoctorTable {
         stmt.executeUpdate(update);
     }
 
+    public void certifyDoctor(int id) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        String update = "UPDATE doctors SET certified = 1 WHERE doctor_id = '" + id + "'";
+        stmt.executeUpdate(update);
+    }
+
     public void printDoctorDetails(String username, String password) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
@@ -129,6 +136,28 @@ public class EditDoctorTable {
         return null;
     }
 
+    public ArrayList<Doctor> databaseToDoctorsNotCertified() throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        ArrayList<Doctor> doctors = new ArrayList<Doctor>();
+        ResultSet rs;
+        try {
+            rs = stmt.executeQuery("SELECT * FROM doctors where certified = 0");
+            while (rs.next()) {
+                String json = DB_Connection.getResultsToJSON(rs);
+                Gson gson = new Gson();
+                Doctor doc = gson.fromJson(json, Doctor.class);
+                doctors.add(doc);
+            }
+            return doctors;
+
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+        return null;
+    }
+
 
     public String databaseToJSON(String username, String password) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
@@ -137,6 +166,23 @@ public class EditDoctorTable {
         ResultSet rs;
         try {
             rs = stmt.executeQuery("SELECT * FROM doctors WHERE username = '" + username + "' AND password='" + password + "'");
+            rs.next();
+            String json = DB_Connection.getResultsToJSON(rs);
+            return json;
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public String databaseToJSONID(int id) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+
+        ResultSet rs;
+        try {
+            rs = stmt.executeQuery("SELECT * FROM doctors WHERE doctor_id = '" + id + "'");
             rs.next();
             String json = DB_Connection.getResultsToJSON(rs);
             return json;
