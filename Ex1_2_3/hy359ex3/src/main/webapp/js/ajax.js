@@ -519,7 +519,7 @@ function getAllDoctors() {
         if (xhr.readyState === 4 && xhr.status === 200) {
             const responseData = JSON.parse(xhr.responseText);
             $('#ajax_update').hide();
-            $('#ajax_form').html("<h1>Doctors</h1> <button id='show_map' class='btn btn-dark' onclick='showMap()'>Show on map</button><br><div id='Map_doc' style='display: none; height:600px; width:100%; border:1px solid'></div>");
+            $('#ajax_form').html("<h1>Doctors</h1> <button id='show_map' class='btn btn-dark' onclick='showMapFindDoctors()'>Show on map</button><br><div id='Map_doc' style='display: none; height:600px; width:100%; border:1px solid'></div>");
 
             for (let doctor in responseData) {
                 var json = {};
@@ -556,7 +556,7 @@ function getAllDoctors() {
 }
 
 /* Function that shows the map. */
-function showMap() {
+/*function showMap() {
     var position;
 
     document.getElementById("Map_doc").style.display = "block";
@@ -580,6 +580,66 @@ function showMap() {
         });
 
     }
+
+    //Orismos zoom
+    const zoom = 11;
+    map.setCenter(position, zoom);
+}*/
+
+function showMapFindDoctors(){
+     var position;
+
+    document.getElementById("Map_doc").style.display = "block";
+    document.getElementById("show_map").disabled = true;
+
+    map = new OpenLayers.Map("Map_doc");
+    mapnik = new OpenLayers.Layer.OSM();
+    map.addLayer(mapnik);
+
+    markers = new OpenLayers.Layer.Markers("Markers");
+    map.addLayer(markers);
+
+    for (var i = 0; i < doc_lat.length; i++) {
+        position = setPosition(doc_lat[i], doc_lon[i]);
+
+        mar = new OpenLayers.Marker(position);
+        markers.addMarker(mar);
+
+        mar.events.register('mousedown', mar, function (evt) {
+            handler(position, doc_names[i]);
+        });
+
+    }
+
+    //Orismos zoom
+    const zoom = 11;
+    map.setCenter(position, zoom);
+}
+
+function showMap(){
+     var position;
+
+    document.getElementById("Map").style.display = "block";
+    document.getElementById("map").disabled = true;
+
+
+    map = new OpenLayers.Map("Map");
+    mapnik = new OpenLayers.Layer.OSM();
+    map.addLayer(mapnik);
+
+    markers = new OpenLayers.Layer.Markers("Markers");
+    map.addLayer(markers);
+
+    mapShown = 1;
+
+    position = setPosition(lat, lon);
+
+    mar = new OpenLayers.Marker(position);
+    markers.addMarker(mar);
+
+    mar.events.register('mousedown', mar, function(evt) {
+        handler(position, document.getElementById("address").value);
+    });
 
     //Orismos zoom
     const zoom = 11;
