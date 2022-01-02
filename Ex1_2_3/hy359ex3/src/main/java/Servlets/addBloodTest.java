@@ -6,20 +6,27 @@
 package Servlets;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import database.tables.EditBloodTestTable;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.StringReader;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import mainClasses.BloodTest;
 import mainClasses.JSON_Converter;
+import mainClasses.User;
 
 /**
  *
@@ -53,6 +60,37 @@ public class addBloodTest extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        HttpSession session = request.getSession();
+        response.setStatus(200);
+
+        String JSON_user = (String) session.getAttribute("loggedIn").toString();
+        JSON_Converter jc = new JSON_Converter();
+        Reader inputString = new StringReader(JSON_user);
+        BufferedReader reader = new BufferedReader(inputString);
+        User su = jc.jsonToUser(reader);
+        String amka = su.getAmka();
+
+        EditBloodTestTable ebtt = new EditBloodTestTable();
+
+        ArrayList<BloodTest> tests = null;
+
+        try {
+            if ((tests = ebtt.databaseToBloodTestAMKA(amka)) != null) {
+                Gson gson = new Gson();
+                JsonArray jsonDoc = gson.toJsonTree(tests).getAsJsonArray();
+                response.setStatus(200);
+                response.getWriter().write(jsonDoc.toString());
+            } else {
+                response.setStatus(403);
+                response.getWriter().write("{\"error\":\"There is no bloodtests with this AMKA in this range\"}");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(addBloodTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(addBloodTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     /**

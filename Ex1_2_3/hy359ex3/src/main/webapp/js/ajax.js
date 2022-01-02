@@ -105,6 +105,7 @@ function createTableFromJSON(data) {
     return html;
 }
 
+
 function createTableFromJSONCertify(data) {
     var html = "<table class=" + "table table-dark" + "><tr><th>Category</th><th>Value</th></tr>";
     for (const x in data) {
@@ -344,6 +345,45 @@ function addBloodTest() {
     xhr.send(jsonData);
 }
 
+function getBloodTestAMKA() {
+    const xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+
+            const obj = JSON.parse(xhr.responseText);
+            var i = 1;
+            $("#ajax_form").show();
+            $("#ajax_update").hide();
+            var count = Object.keys(obj).length;
+            $('#ajax_form').html("<h3>" + count + " BloodTests</h3>");
+            for (id in obj) {
+                delete obj[id]["bloodtest_id"];
+                for(val in obj[id]){
+                    if(obj[id][val] == 0){
+                        delete obj[id][val];
+                        delete obj[id][val + "_level"];
+                    }
+                }
+                $('#ajax_form').append(createTableFromJSON(obj[id]));
+                i++;
+            }
+
+
+        } else if (xhr.status !== 200) {
+            $('#ajax_form').html('Request failed. Returned status of ' + xhr.status + "<br>"
+                    + JSON.stringify(xhr.responseText));
+        }
+    };
+
+    xhr.open("GET", "addBloodTest");
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.send();
+}
+
+
+
+
 
 function getBmi() {
     const data1 = null;
@@ -557,37 +597,37 @@ function getAllDoctors() {
 
 /* Function that shows the map. */
 /*function showMap() {
+ var position;
+ 
+ document.getElementById("Map_doc").style.display = "block";
+ document.getElementById("show_map").disabled = true;
+ 
+ map = new OpenLayers.Map("Map_doc");
+ mapnik = new OpenLayers.Layer.OSM();
+ map.addLayer(mapnik);
+ 
+ markers = new OpenLayers.Layer.Markers("Markers");
+ map.addLayer(markers);
+ 
+ for (var i = 0; i < doc_lat.length; i++) {
+ position = setPosition(doc_lat[i], doc_lon[i]);
+ 
+ mar = new OpenLayers.Marker(position);
+ markers.addMarker(mar);
+ 
+ mar.events.register('mousedown', mar, function (evt) {
+ handler(position, doc_names[i]);
+ });
+ 
+ }
+ 
+ //Orismos zoom
+ const zoom = 11;
+ map.setCenter(position, zoom);
+ }*/
+
+function showMapFindDoctors() {
     var position;
-
-    document.getElementById("Map_doc").style.display = "block";
-    document.getElementById("show_map").disabled = true;
-
-    map = new OpenLayers.Map("Map_doc");
-    mapnik = new OpenLayers.Layer.OSM();
-    map.addLayer(mapnik);
-
-    markers = new OpenLayers.Layer.Markers("Markers");
-    map.addLayer(markers);
-
-    for (var i = 0; i < doc_lat.length; i++) {
-        position = setPosition(doc_lat[i], doc_lon[i]);
-
-        mar = new OpenLayers.Marker(position);
-        markers.addMarker(mar);
-
-        mar.events.register('mousedown', mar, function (evt) {
-            handler(position, doc_names[i]);
-        });
-
-    }
-
-    //Orismos zoom
-    const zoom = 11;
-    map.setCenter(position, zoom);
-}*/
-
-function showMapFindDoctors(){
-     var position;
 
     document.getElementById("Map_doc").style.display = "block";
     document.getElementById("show_map").disabled = true;
@@ -616,8 +656,8 @@ function showMapFindDoctors(){
     map.setCenter(position, zoom);
 }
 
-function showMap(){
-     var position;
+function showMap() {
+    var position;
 
     document.getElementById("Map").style.display = "block";
     document.getElementById("map").disabled = true;
@@ -637,7 +677,7 @@ function showMap(){
     mar = new OpenLayers.Marker(position);
     markers.addMarker(mar);
 
-    mar.events.register('mousedown', mar, function(evt) {
+    mar.events.register('mousedown', mar, function (evt) {
         handler(position, document.getElementById("address").value);
     });
 
