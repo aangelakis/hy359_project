@@ -339,7 +339,7 @@ function addBloodTest() {
 
         }
     };
-    xhr.open('POST', 'http://localhost:8080/hy359ex3/bloodtests/tests/newBloodTest');
+    xhr.open('POST', 'addBloodTest');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send(jsonData);
 }

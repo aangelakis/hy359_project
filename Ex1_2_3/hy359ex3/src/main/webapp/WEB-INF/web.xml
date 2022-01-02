@@ -64,6 +64,10 @@
         <servlet-name>DeleteDoctors</servlet-name>
         <servlet-class>Servlets.DeleteDoctors</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>addBloodTest</servlet-name>
+        <servlet-class>Servlets.addBloodTest</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Register</servlet-name>
         <url-pattern>/Register</url-pattern>
@@ -127,6 +131,10 @@
     <servlet-mapping>
         <servlet-name>DeleteDoctors</servlet-name>
         <url-pattern>/DeleteDoctors</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>addBloodTest</servlet-name>
+        <url-pattern>/addBloodTest</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
