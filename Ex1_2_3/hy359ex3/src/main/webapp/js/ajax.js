@@ -101,7 +101,7 @@ function createTableFromJSON(data) {
         html += "<tr><td>" + category + "</td><td>" + value + "</td></tr>";
     }
     html += "</table>";
-    html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>"
+    html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
     return html;
 }
 
@@ -195,6 +195,21 @@ function createTableFromJSONCompareList(data, count) {
         html += "</tr>";
     }
     html += "</table>";
+    html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
+    return html;
+}
+
+function createTableFromJSONCancelRandevouz(data){
+    var html = "<table class=" + "table table-dark" + "><tr><th>Category</th><th>Value</th></tr>";
+    for (const x in data) {
+        var category = x;
+        var value = data[x];
+        html += "<tr><td>" + category + "</td><td>" + value + "</td></tr>";
+    }
+    html += "</table>";
+    
+    html += "<button class='btn btn-dark' id='" + data['randevouz_id'] + "' onclick='cancelRandevouz(" + data['randevouz_id'] + ")'> Cancel Randevouz " + "</button>";
+    
     html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
     return html;
 }
@@ -467,7 +482,6 @@ function addRandevouz() {
         }
     }
 
-
     var jsonData = JSON.stringify(data);
     console.log(jsonData);
 
@@ -484,6 +498,52 @@ function addRandevouz() {
     xhr.open("POST", "addRandevouz");
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send(jsonData);
+}
+
+function cancelRandevouz(id) {
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function() {
+        if(xhr.readyState === 4 && xhr.status === 200) {
+            $("#ajax_form").load("RandevouzManager.html");
+        }else if(xhr.status !== 200) {
+            
+        }
+    };
+    
+    let text = {};
+    text["id"] = id;
+    var JSONdata = JSON.stringify(text);
+    console.log(JSONdata);
+    
+    xhr.open("POST","cancelRandevouz");
+    xhr.setRequestHeader("Content-type","application/json");
+    xhr.send(JSONdata);
+}
+
+function getAllRandevouz() {
+     var xhr = new XMLHttpRequest();
+     xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            const responseData = JSON.parse(xhr.responseText);
+            $('#ajax_update').hide();
+            $('#ajax_form').html("<h1>Randevouz</h1>");
+            for (let randevouz in responseData) {
+                var json = {};
+                for (let x in responseData[randevouz]) {
+                    json[x] = responseData[randevouz][x];
+                }
+                console.log(json);
+                $('#ajax_form').append(createTableFromJSONCancelRandevouz(json));
+                $('#ajax_form').show();
+            }
+        } else if (xhr.status !== 200) {
+            alert('Request failed. Returned status of ' + xhr.status);
+        }
+    };
+
+    xhr.open('GET', 'getAllRandevouz');
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.send();
 }
 
 function showUpdateForm() {
@@ -763,7 +823,7 @@ function getAllDoctors() {
                 var json = {};
                 for (let x in responseData[doctor]) {
 
-                    if (x == 'lat') {
+                    if (x === 'lat') {
                         doc_lat.push(responseData[doctor][x]);
                     }
 
