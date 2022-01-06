@@ -1,0 +1,35 @@
+<div id="randevouz_form">
+
+    <header>
+        <h1>Submit your randevouz</h1><br>
+    </header>
+
+    <form id="randevouzForm" name="myForm" onsubmit='addRandevouz();return false'>
+        
+            
+                <label for='username'>Username:</label>
+                <input id='username' type='text' name='username' class="form-control" required><br>
+            
+            
+                <label for='date_time'>Date and Time:</label>
+                <input id='date_time' type='text' name='date_time' class="form-control" required><br>
+            
+            
+                <label for='price'>Price:</label>
+                <input id='price' type="number" name='price' class="form-control" required 
+                min="10" max="80"><br>
+            
+        
+                <label for='doctor_info'>Doctor Info:</label>
+                <input id='doctor_info' type="text" name='doctor_info' class="form-control"><br>
+            
+            
+                <label for='user_info'>User Info:</label>
+                <input id='user_info' type='text' name='user_info' class="form-control"><br>
+            
+        
+        <input type='submit' class="btn btn-dark" value="Add Randevouz"> <!-- Press this to submit form -->
+        <div id="msg">
+        </div>
+    </form>
+</div>

@@ -116,8 +116,6 @@ function passWeakness1() {
     }
 }
 
-
-
 function checkTerms() {
 
     var agreements = document.getElementById("agreement").checked
@@ -248,7 +246,7 @@ function passVerify() {
     var passwordver = document.getElementById("pwdver").value;
     if (password.length !== 0) {
         console.log(password.length);
-        if (password != passwordver) {
+        if (password !== passwordver) {
             document.getElementById("passErr").innerHTML = "Passwords do not match!";
             //document.getElementById("submit").disabled = true;
         } else {
@@ -269,7 +267,7 @@ function passVerify1() {
     var passwordver = document.getElementById("pwdver").value;
     if (password.length !== 0) {
         console.log(password.length);
-        if (password != passwordver) {
+        if (password !== passwordver) {
             document.getElementById("passErr").innerHTML = "Passwords do not match!";
             //document.getElementById("submit").disabled = true;
         } else {

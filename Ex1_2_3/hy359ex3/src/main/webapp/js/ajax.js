@@ -286,6 +286,63 @@ function getDoctorDataRequest() {
     xhr.send();
 }
 
+function getRandevouzRequest() {
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function() {
+        if(xhr.readyState === 4 && xhr.status === 200) {
+            
+        }else if(xhr.status !== 200) {
+            
+        }
+    };
+    xhr.open("GET","seeRandevouz");
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.send();
+}
+
+function randevouzManager() {
+    $("#ajax_update").hide();
+    $("#ajax_form").load("RandevouzManager.html");
+    $("#ajax_form").show();
+}
+
+function showRandevouzForm() {
+    $("#ajax_update").hide();
+    $("#ajax_form").load("RandevouzForm.html");
+   // $("#ajax_form").show();
+}
+
+function addRandevouz() {
+    let myForm = document.getElementById("randevouzForm");
+    let formData = new FormData(myForm);
+    const data = {};
+    formData.append("status","free");
+    formData.forEach((value,key) => (data[key] = value));
+    for(var key in data) {
+        if(data[key] === "") {
+            delete data[key];
+        }
+    }
+    
+    
+    var jsonData = JSON.stringify(data);
+    console.log(jsonData);
+    
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function() {
+        if(xhr.readyState === 4 && xhr.status === 200) {
+            $("#ajax_form").load("RandevouzManager.html");
+            console.log(xhr.responseText);
+        }else if(xhr.status !== 200) {
+            alert(xhr.responseText);
+            console.log("oops gamoto");
+        }
+    };
+    xhr.open("POST","addRandevouz");
+    xhr.setRequestHeader("Content-type","application/json");
+    xhr.send(jsonData);
+}
+
 function showUpdateForm() {
     $("#ajax_form").hide();
     $("#ajax_update").show();
@@ -380,9 +437,6 @@ function getBloodTestAMKA() {
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send();
 }
-
-
-
 
 
 function getBmi() {
@@ -705,7 +759,6 @@ function handler(position, message) {
             );
     map.addPopup(popup);
 }
-
 
 
 function username_check() {
