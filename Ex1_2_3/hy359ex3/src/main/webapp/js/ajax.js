@@ -162,8 +162,8 @@ function createTableFromJSONCompareBloodTests(data) {
         html += "<tr><td>" + category + "</td><td>" + value + "</td></tr>";
     }
     html += "</table>";
-    html += "<button class='btn btn-dark' id='" + data['bloodtest_id'] + "' onclick='addToCompareList(" + data['bloodtest_id'] + ")'> Add bloodtest to compare list." + "</button>";
-    html += "<button class='btn btn-dark' id='" + data['bloodtest_id'] + "_rem' onclick='removeFromCompareList(" + data['bloodtest_id'] + ")'> Remove bloodtest from compare list." + "</button>";
+    html += "<button style='margin-left:5px' class='btn btn-dark' id='" + data['bloodtest_id'] + "' onclick='addToCompareList(" + data['bloodtest_id'] + ")'> Add bloodtest to compare list." + "</button>";
+    html += "<button style='margin-left:5px' class='btn btn-dark' id='" + data['bloodtest_id'] + "_rem' onclick='removeFromCompareList(" + data['bloodtest_id'] + ")'> Remove bloodtest from compare list." + "</button>";
 
 
     html += "<div id='" + data['bloodtest_id'] + "'></div>";
@@ -199,7 +199,74 @@ function createTableFromJSONCompareList(data, count) {
     return html;
 }
 
-function createTableFromJSONCancelRandevouz(data){
+function compareFunctions() {
+    $('#ajax_form').html("<h1>Please select how you want to compare your bloodtests</h1><br>");
+
+    var html = "<button style='margin-left:5px' class='btn btn-dark' id='table_btn' onclick='getCompareList()'>Table</button>";
+    html += "<button style='margin-left:5px' class='btn btn-dark' id='charts_btn' onclick='getCharts()'>Charts</button>";
+    $("#ajax_form").show();
+    $("#ajax_update").hide();
+    $("#ajax_form").append(html);
+
+}
+
+
+function getCharts() {
+
+    if (compareList !== "" && compareList !== "[") {
+        JSONCompareList = compareList.slice(0, -1);
+        JSONCompareList += "]";
+        JSONCompareList = JSON.parse(JSONCompareList);
+        console.log(JSONCompareList);
+        count = JSONCompareList.length;
+
+        $('#ajax_form').html("<h1>Please select how you want to compare your bloodtests</h1><br>");
+
+        var html = "<button style='margin-left:5px' class='btn btn-dark' id='table_btn' onclick='getCompareList()'>Table</button>";
+        html += "<button style='margin-left:5px' class='btn btn-dark' id='charts_btn' onclick='getCharts()'>Charts</button>";
+        $("#ajax_form").append(html);
+
+
+        $('#ajax_form').append("<h1>Charts</h1>");
+        $("#ajax_form").show();
+        $("#ajax_update").hide();
+        $('#table_btn').attr('disabled', false);
+        $('#charts_btn').attr('disabled', true);
+
+        for (var i = 0; i < count; i++) {
+            $("#ajax_form").append("<div id='piechart" + i + "'</div>");
+            drawChart(i, JSONCompareList);
+        }
+    }
+}
+
+function drawChart(i, JSONCompareList) {
+
+    var data = google.visualization.arrayToDataTable([
+        ["den xero", "ayto prepei na einai string gia kapoion logo"],
+        ["Vitamin D3", JSONCompareList[i]['vitamin_d3']],
+        ["Vitamin B12", JSONCompareList[i]['vitamin_b12']],
+        ["Cholesterol", JSONCompareList[i]['cholesterol']],
+        ["Blood Sugar", JSONCompareList[i]['blood_sugar']],
+        ["Iron", JSONCompareList[i]['iron']],
+    ]);
+
+    var options = {
+        title: "BloodTest " + (i + 1) + " - TestDate: " + JSONCompareList[i]['test_date'] + " - Medical Center: " + JSONCompareList[i]['medical_center'] + " - AMKA: " + JSONCompareList[i]['amka'],
+        //colors: ['#9d0000', '#CCCC00', '#0000FF'],
+        is3D: true,
+
+    };
+
+    var chart = new google.visualization.PieChart(document.getElementById('piechart' + i));
+
+    chart.draw(data, options);
+}
+
+
+
+
+function createTableFromJSONCancelRandevouz(data) {
     var html = "<table class=" + "table table-dark" + "><tr><th>Category</th><th>Value</th></tr>";
     for (const x in data) {
         var category = x;
@@ -207,9 +274,9 @@ function createTableFromJSONCancelRandevouz(data){
         html += "<tr><td>" + category + "</td><td>" + value + "</td></tr>";
     }
     html += "</table>";
-    
+
     html += "<button class='btn btn-dark' id='" + data['randevouz_id'] + "' onclick='cancelRandevouz(" + data['randevouz_id'] + ")'> Cancel Randevouz " + "</button>";
-    
+
     html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
     return html;
 }
@@ -229,14 +296,16 @@ function addToCompareList(id) {
                 document.getElementById(responseData['bloodtest_id']).disabled = "true";
 
             } else {
-                if(compareList[compareList.length-1] === "]"){
+                if (compareList[compareList.length - 1] === "]") {
                     compareList = compareList.slice(0, -1);
-                    compareList += ",";
+                    if (compareList.length !== 1) {
+                        compareList += ",";
+                    }
                 }
                 compareList += xhr.responseText + ",";
                 //console.log(JSON.parse(compareList));
-                document.getElementById(responseData['bloodtest_id']).disabled = "true";
                 document.getElementById(responseData['bloodtest_id']).innerHTML = "Succesfully added";
+
             }
             console.log(compareList);
         } else {
@@ -266,13 +335,14 @@ function removeFromCompareList(id) {
                 flag = 1;
                 delete JSONCompareList[i];
                 //JSONCompareList = JSONCompareList.splice(i,1);
-                JSONCompareList = JSONCompareList.filter(function (el){
-                   return el != null; 
+                JSONCompareList = JSONCompareList.filter(function (el) {
+                    return el != null;
                 });
-                
+
                 compareList = JSON.stringify(JSONCompareList);
                 console.log(compareList);
                 document.getElementById(id + "_rem").innerHTML = "Succesfully deleted";
+
                 break;
             }
         }
@@ -282,6 +352,7 @@ function removeFromCompareList(id) {
     } else {
         document.getElementById(id + "_rem").innerHTML = "BloodTest does not exist in compare list";
     }
+
 }
 
 
@@ -292,7 +363,14 @@ function getCompareList() {
         JSONCompareList = JSON.parse(JSONCompareList);
         console.log(JSONCompareList);
         count = JSONCompareList.length;
-        $('#ajax_form').html("<h1>Compare List</h1>");
+
+        $('#ajax_form').html("<h1>Please select how you want to compare your bloodtests</h1><br>");
+
+        var html = "<button style='margin-left:5px' class='btn btn-dark' id='table_btn' onclick='getCompareList()'>Table</button>";
+        html += "<button style='margin-left:5px' class='btn btn-dark' id='charts_btn' onclick='getCharts()'>Charts</button>";
+        $("#ajax_form").append(html);
+
+        $('#ajax_form').append("<h1>Compare List</h1>");
         $("#ajax_form").show();
         $("#ajax_update").hide();
 
@@ -303,8 +381,10 @@ function getCompareList() {
         //}
 
     } else {
-        $('#ajax_form').html("<h1>Your Compare List is empty</h1>");
+        $('#ajax_form').append("<h1>Your Compare List is empty</h1>");
     }
+    $('#table_btn').attr('disabled', true);
+    $('#charts_btn').attr('disabled', false);
 
 }
 
@@ -502,27 +582,27 @@ function addRandevouz() {
 
 function cancelRandevouz(id) {
     var xhr = new XMLHttpRequest();
-    xhr.onload = function() {
-        if(xhr.readyState === 4 && xhr.status === 200) {
+    xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
             $("#ajax_form").load("RandevouzManager.html");
-        }else if(xhr.status !== 200) {
-            
+        } else if (xhr.status !== 200) {
+
         }
     };
-    
+
     let text = {};
     text["id"] = id;
     var JSONdata = JSON.stringify(text);
     console.log(JSONdata);
-    
-    xhr.open("POST","cancelRandevouz");
-    xhr.setRequestHeader("Content-type","application/json");
+
+    xhr.open("POST", "cancelRandevouz");
+    xhr.setRequestHeader("Content-type", "application/json");
     xhr.send(JSONdata);
 }
 
 function getAllRandevouz() {
-     var xhr = new XMLHttpRequest();
-     xhr.onload = function () {
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             const responseData = JSON.parse(xhr.responseText);
             $('#ajax_update').hide();
