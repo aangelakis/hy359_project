@@ -47,6 +47,8 @@ public class EditSimpleUserTable {
         Statement stmt = con.createStatement();
         String update = "UPDATE users SET weight='" + weight + "' WHERE username = '" + username + "'";
         stmt.executeUpdate(update);
+        stmt.close();
+        con.close();
     }
 
     public void deleteSimpleUser(int id) throws SQLException, ClassNotFoundException {
@@ -54,6 +56,8 @@ public class EditSimpleUserTable {
         Statement stmt = con.createStatement();
         String delete = "DELETE FROM users WHERE user_id = '" + id + "'";
         stmt.executeUpdate(delete);
+        stmt.close();
+        con.close();
     }
 
     public String databaseToJSONID(int id) throws SQLException, ClassNotFoundException {
@@ -70,6 +74,8 @@ public class EditSimpleUserTable {
             System.err.println("Got an exception! ");
             System.err.println(e.getMessage());
         }
+        stmt.close();
+        con.close();
         return null;
     }
 
@@ -92,6 +98,7 @@ public class EditSimpleUserTable {
 
         stmt.executeUpdate(update);
         stmt.close();
+        con.close();
     }
 
     public void printSimpleUserDetails(String username, String password) throws SQLException, ClassNotFoundException {
@@ -109,6 +116,8 @@ public class EditSimpleUserTable {
             System.err.println("Got an exception! ");
             System.err.println(e.getMessage());
         }
+        stmt.close();
+        con.close();
     }
 
     public SimpleUser databaseToSimpleUser(String username, String password) throws SQLException, ClassNotFoundException {
@@ -127,6 +136,8 @@ public class EditSimpleUserTable {
             System.err.println("Got an exception! ");
             System.err.println(e.getMessage());
         }
+        stmt.close();
+        con.close();
         return null;
     }
 
@@ -149,6 +160,8 @@ public class EditSimpleUserTable {
             System.err.println("Got an exception! ");
             System.err.println(e.getMessage());
         }
+        stmt.close();
+        con.close();
         return null;
     }
 
@@ -166,6 +179,8 @@ public class EditSimpleUserTable {
             System.err.println("Got an exception! ");
             System.err.println(e.getMessage());
         }
+        stmt.close();
+        con.close();
         return null;
     }
 
@@ -183,6 +198,8 @@ public class EditSimpleUserTable {
             System.err.println("Got an exception! ");
             System.err.println(e.getMessage());
         }
+        stmt.close();
+        con.close();
         return null;
     }
 
@@ -200,6 +217,8 @@ public class EditSimpleUserTable {
             System.err.println("Got an exception! ");
             System.err.println(e.getMessage());
         }
+        stmt.close();
+        con.close();
         return false;
     }
 
@@ -217,6 +236,8 @@ public class EditSimpleUserTable {
             System.err.println("Got an exception! ");
             System.err.println(e.getMessage());
         }
+        stmt.close();
+        con.close();
         return false;
     }
 
@@ -234,6 +255,8 @@ public class EditSimpleUserTable {
             System.err.println("Got an exception! ");
             System.err.println(e.getMessage());
         }
+        stmt.close();
+        con.close();
         return false;
     }
 
@@ -265,6 +288,7 @@ public class EditSimpleUserTable {
                 + " PRIMARY KEY ( user_id))";
         stmt.execute(query);
         stmt.close();
+        con.close();
     }
 
     /**
@@ -308,6 +332,7 @@ public class EditSimpleUserTable {
 
             /* Get the member id from the database and set it to the member */
             stmt.close();
+            con.close();
 
         } catch (SQLException ex) {
             Logger.getLogger(EditSimpleUserTable.class.getName()).log(Level.SEVERE, null, ex);

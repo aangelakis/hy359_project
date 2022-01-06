@@ -46,6 +46,8 @@ public class EditDoctorTable {
         Statement stmt = con.createStatement();
         String update = "UPDATE doctors SET height='" + height + "' WHERE username = '" + username + "'";
         stmt.executeUpdate(update);
+        stmt.close();
+        con.close();
     }
 
     public void certifyDoctor(int id) throws SQLException, ClassNotFoundException {
@@ -53,6 +55,8 @@ public class EditDoctorTable {
         Statement stmt = con.createStatement();
         String update = "UPDATE doctors SET certified = 1 WHERE doctor_id = '" + id + "'";
         stmt.executeUpdate(update);
+        stmt.close();
+        con.close();
     }
 
     public void deleteDoctor(int id) throws SQLException, ClassNotFoundException {
@@ -60,6 +64,8 @@ public class EditDoctorTable {
         Statement stmt = con.createStatement();
         String delete = "DELETE FROM doctors WHERE doctor_id = '" + id + "'";
         stmt.executeUpdate(delete);
+        stmt.close();
+        con.close();
     }
 
     public void printDoctorDetails(String username, String password) throws SQLException, ClassNotFoundException {
@@ -78,6 +84,8 @@ public class EditDoctorTable {
             System.err.println("Got an exception! ");
             System.err.println(e.getMessage());
         }
+        stmt.close();
+        con.close();
     }
 
     public Doctor databaseToDoctor(String username, String password) throws SQLException, ClassNotFoundException {
@@ -96,13 +104,15 @@ public class EditDoctorTable {
             System.err.println("Got an exception! ");
             System.err.println(e.getMessage());
         }
+        stmt.close();
+        con.close();
         return null;
     }
 
     public ArrayList<Doctor> databaseToDoctors() throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
-        ArrayList<Doctor> doctors=new ArrayList<Doctor>();
+        ArrayList<Doctor> doctors = new ArrayList<Doctor>();
         ResultSet rs;
         try {
             rs = stmt.executeQuery("SELECT * FROM doctors");
@@ -118,6 +128,8 @@ public class EditDoctorTable {
             System.err.println("Got an exception! ");
             System.err.println(e.getMessage());
         }
+        stmt.close();
+        con.close();
         return null;
     }
 
@@ -140,6 +152,8 @@ public class EditDoctorTable {
             System.err.println("Got an exception! ");
             System.err.println(e.getMessage());
         }
+        stmt.close();
+        con.close();
         return null;
     }
 
@@ -162,9 +176,10 @@ public class EditDoctorTable {
             System.err.println("Got an exception! ");
             System.err.println(e.getMessage());
         }
+        stmt.close();
+        con.close();
         return null;
     }
-
 
     public String databaseToJSON(String username, String password) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
@@ -180,6 +195,8 @@ public class EditDoctorTable {
             System.err.println("Got an exception! ");
             System.err.println(e.getMessage());
         }
+        stmt.close();
+        con.close();
         return null;
     }
 
@@ -197,6 +214,8 @@ public class EditDoctorTable {
             System.err.println("Got an exception! ");
             System.err.println(e.getMessage());
         }
+        stmt.close();
+        con.close();
         return null;
     }
 
@@ -214,6 +233,8 @@ public class EditDoctorTable {
             System.err.println("Got an exception! ");
             System.err.println(e.getMessage());
         }
+        stmt.close();
+        con.close();
         return null;
     }
 
@@ -231,6 +252,8 @@ public class EditDoctorTable {
             System.err.println("Got an exception! ");
             System.err.println(e.getMessage());
         }
+        stmt.close();
+        con.close();
         return false;
     }
 
@@ -248,6 +271,8 @@ public class EditDoctorTable {
             System.err.println("Got an exception! ");
             System.err.println(e.getMessage());
         }
+        stmt.close();
+        con.close();
         return false;
     }
 
@@ -265,6 +290,8 @@ public class EditDoctorTable {
             System.err.println("Got an exception! ");
             System.err.println(e.getMessage());
         }
+        stmt.close();
+        con.close();
         return false;
     }
 
@@ -299,6 +326,7 @@ public class EditDoctorTable {
                 + " PRIMARY KEY ( doctor_id))";
         stmt.execute(query);
         stmt.close();
+        con.close();
     }
 
     /**
@@ -345,6 +373,7 @@ public class EditDoctorTable {
 
             /* Get the member id from the database and set it to the member */
             stmt.close();
+            con.close();
 
         } catch (SQLException ex) {
             Logger.getLogger(EditDoctorTable.class.getName()).log(Level.SEVERE, null, ex);

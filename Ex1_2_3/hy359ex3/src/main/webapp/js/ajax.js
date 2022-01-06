@@ -151,6 +151,149 @@ function createTableFromJSONDeleteDoctor(data) {
 }
 
 
+var compareList = "[";
+
+function createTableFromJSONCompareBloodTests(data) {
+    // compareList = "[";
+    var html = "<table class=" + "table table-dark" + "><tr><th>Category</th><th>Value</th></tr>";
+    for (const x in data) {
+        var category = x;
+        var value = data[x];
+        html += "<tr><td>" + category + "</td><td>" + value + "</td></tr>";
+    }
+    html += "</table>";
+    html += "<button class='btn btn-dark' id='" + data['bloodtest_id'] + "' onclick='addToCompareList(" + data['bloodtest_id'] + ")'> Add bloodtest to compare list." + "</button>";
+    html += "<button class='btn btn-dark' id='" + data['bloodtest_id'] + "_rem' onclick='removeFromCompareList(" + data['bloodtest_id'] + ")'> Remove bloodtest from compare list." + "</button>";
+
+
+    html += "<div id='" + data['bloodtest_id'] + "'></div>";
+    html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
+    return html;
+}
+
+function createTableFromJSONCompareList(data, count) {
+    console.log(count);
+    var html = "<table style='table-layout: fixed; width: 100%' class=" + "table table-dark" + "><tr><th>Category</th>";
+    for (var i = 0; i < count; i++) {
+        html += "<th>BloodTest " + (i + 1) + "</th>";
+    }
+    html += "</tr>";
+    var j = 0;
+    for (const x in data[j]) {
+        html += "<tr>";
+        flag = 0;
+        for (k = j; k < count; k++) {
+            var category = x;
+            var value = data[k][x];
+            if (flag === 0) {
+                flag = 1;
+                html += "<td>" + category + "</td><td>" + value + "</td>";
+            } else {
+                html += "<td>" + value + "</td>";
+            }
+        }
+        html += "</tr>";
+    }
+    html += "</table>";
+    html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
+    return html;
+}
+
+
+function addToCompareList(id) {
+    var xhr = new XMLHttpRequest();
+
+    xhr.onload = function () {
+        console.log(xhr.responseText);
+        const responseData = JSON.parse(xhr.responseText);
+
+        if (xhr.readyState === 4 && xhr.status === 200) {
+
+            if (compareList.includes("\"bloodtest_id\":" + responseData['bloodtest_id'])) {
+                document.getElementById(responseData['bloodtest_id']).innerHTML = "BloodTest already in compare list";
+                document.getElementById(responseData['bloodtest_id']).disabled = "true";
+
+            } else {
+                if(compareList[compareList.length-1] === "]"){
+                    compareList = compareList.slice(0, -1);
+                    compareList += ",";
+                }
+                compareList += xhr.responseText + ",";
+                //console.log(JSON.parse(compareList));
+                document.getElementById(responseData['bloodtest_id']).disabled = "true";
+                document.getElementById(responseData['bloodtest_id']).innerHTML = "Succesfully added";
+            }
+            console.log(compareList);
+        } else {
+            document.getElementById(responseData['bloodtest_id']).innerHTML = "There was an error adding to compare list";
+        }
+    };
+
+    let text = {};
+    text["id"] = id;
+    var JSONdata = JSON.stringify(text);
+    console.log(JSONdata);
+
+    xhr.open('POST', 'getBloodTest');
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.send(JSONdata);
+}
+
+
+function removeFromCompareList(id) {
+    if (compareList !== "" && compareList !== "[") {
+        JSONCompareList = compareList.slice(0, -1);
+        JSONCompareList += "]";
+        JSONCompareList = JSON.parse(JSONCompareList);
+        var flag = 0;
+        for (var i = 0; i < JSONCompareList.length; i++) {
+            if (id === JSONCompareList[i]['bloodtest_id']) {
+                flag = 1;
+                delete JSONCompareList[i];
+                //JSONCompareList = JSONCompareList.splice(i,1);
+                JSONCompareList = JSONCompareList.filter(function (el){
+                   return el != null; 
+                });
+                
+                compareList = JSON.stringify(JSONCompareList);
+                console.log(compareList);
+                document.getElementById(id + "_rem").innerHTML = "Succesfully deleted";
+                break;
+            }
+        }
+        if (flag === 0) {
+            document.getElementById(id + "_rem").innerHTML = "BloodTest does not exist in compare list";
+        }
+    } else {
+        document.getElementById(id + "_rem").innerHTML = "BloodTest does not exist in compare list";
+    }
+}
+
+
+function getCompareList() {
+    if (compareList !== "" && compareList !== "[") {
+        JSONCompareList = compareList.slice(0, -1);
+        JSONCompareList += "]";
+        JSONCompareList = JSON.parse(JSONCompareList);
+        console.log(JSONCompareList);
+        count = JSONCompareList.length;
+        $('#ajax_form').html("<h1>Compare List</h1>");
+        $("#ajax_form").show();
+        $("#ajax_update").hide();
+
+        //for (id in JSONCompareList) {
+        //delete obj[id]["bloodtest_id"];
+        $('#ajax_form').append(createTableFromJSONCompareList(JSONCompareList, count));
+
+        //}
+
+    } else {
+        $('#ajax_form').html("<h1>Your Compare List is empty</h1>");
+    }
+
+}
+
+
 function deleteDoctor(id) {
     var xhr = new XMLHttpRequest();
 
@@ -288,14 +431,14 @@ function getDoctorDataRequest() {
 
 function getRandevouzRequest() {
     var xhr = new XMLHttpRequest();
-    xhr.onload = function() {
-        if(xhr.readyState === 4 && xhr.status === 200) {
-            
-        }else if(xhr.status !== 200) {
-            
+    xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+
+        } else if (xhr.status !== 200) {
+
         }
     };
-    xhr.open("GET","seeRandevouz");
+    xhr.open("GET", "seeRandevouz");
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send();
 }
@@ -309,37 +452,37 @@ function randevouzManager() {
 function showRandevouzForm() {
     $("#ajax_update").hide();
     $("#ajax_form").load("RandevouzForm.html");
-   // $("#ajax_form").show();
+    // $("#ajax_form").show();
 }
 
 function addRandevouz() {
     let myForm = document.getElementById("randevouzForm");
     let formData = new FormData(myForm);
     const data = {};
-    formData.append("status","free");
-    formData.forEach((value,key) => (data[key] = value));
-    for(var key in data) {
-        if(data[key] === "") {
+    formData.append("status", "free");
+    formData.forEach((value, key) => (data[key] = value));
+    for (var key in data) {
+        if (data[key] === "") {
             delete data[key];
         }
     }
-    
-    
+
+
     var jsonData = JSON.stringify(data);
     console.log(jsonData);
-    
+
     var xhr = new XMLHttpRequest();
-    xhr.onload = function() {
-        if(xhr.readyState === 4 && xhr.status === 200) {
+    xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
             $("#ajax_form").load("RandevouzManager.html");
             console.log(xhr.responseText);
-        }else if(xhr.status !== 200) {
+        } else if (xhr.status !== 200) {
             alert(xhr.responseText);
             console.log("oops gamoto");
         }
     };
-    xhr.open("POST","addRandevouz");
-    xhr.setRequestHeader("Content-type","application/json");
+    xhr.open("POST", "addRandevouz");
+    xhr.setRequestHeader("Content-type", "application/json");
     xhr.send(jsonData);
 }
 
@@ -408,20 +551,21 @@ function getBloodTestAMKA() {
         if (xhr.readyState === 4 && xhr.status === 200) {
 
             const obj = JSON.parse(xhr.responseText);
+            console.log(obj);
             var i = 1;
             $("#ajax_form").show();
             $("#ajax_update").hide();
             var count = Object.keys(obj).length;
             $('#ajax_form').html("<h3>" + count + " BloodTests</h3>");
             for (id in obj) {
-                delete obj[id]["bloodtest_id"];
-                for(val in obj[id]){
-                    if(obj[id][val] == 0){
+                //delete obj[id]["bloodtest_id"];
+                for (val in obj[id]) {
+                    if (obj[id][val] == 0) {
                         delete obj[id][val];
                         delete obj[id][val + "_level"];
                     }
                 }
-                $('#ajax_form').append(createTableFromJSON(obj[id]));
+                $('#ajax_form').append(createTableFromJSONCompareBloodTests(obj[id]));
                 i++;
             }
 
