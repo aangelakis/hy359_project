@@ -110,7 +110,16 @@ public class EditRandevouzTable {
     public void updateRandevouz(int randevouzID, int userID, String info, String status) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
-        String updateQuery = "UPDATE randevouz SET user_id='" + userID + "',status='" + status +"',user_info='" + info + "' WHERE randevouz_id = '" + randevouzID + "'";
+        String updateQuery = "UPDATE randevouz SET user_id='" + userID + "',status='" + status + "',user_info='" + info + "' WHERE randevouz_id = '" + randevouzID + "'";
+        stmt.executeUpdate(updateQuery);
+        stmt.close();
+        con.close();
+    }
+
+    public void updateRandevouzDoctor(int randevouzID, String DateAndTime, int price, String info, String status) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        String updateQuery = "UPDATE randevouz SET date_time='" + DateAndTime + "',price='" + price + "',status='" + status + "',doctor_info='" + info + "' WHERE randevouz_id = '" + randevouzID + "'";
         stmt.executeUpdate(updateQuery);
         stmt.close();
         con.close();

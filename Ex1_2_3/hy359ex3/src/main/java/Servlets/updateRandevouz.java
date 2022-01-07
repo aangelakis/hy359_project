@@ -32,8 +32,8 @@ import mainClasses.Randevouz;
  *
  * @author ΜΙΧΑΛΗΣ
  */
-@WebServlet(name = "addRandevouz", urlPatterns = {"/addRandevouz"})
-public class addRandevouz extends HttpServlet {
+@WebServlet(name = "updateRandevouz", urlPatterns = {"/updateRandevouz"})
+public class updateRandevouz extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -51,10 +51,10 @@ public class addRandevouz extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet addRandevouz</title>");
+            out.println("<title>Servlet updateRandevouz</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet addRandevouz at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet updateRandevouz at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -72,7 +72,7 @@ public class addRandevouz extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // processRequest(request, response);
+        processRequest(request, response);
     }
 
     /**
@@ -102,18 +102,12 @@ public class addRandevouz extends HttpServlet {
         EditSimpleUserTable eut = new EditSimpleUserTable();
 
         try {
-            if (eut.usernameInDataBase(obj.get("username").getAsString())) {
-                JsonObject user_id = gson.fromJson(eut.usernameToID(obj.get("username").getAsString()), JsonObject.class);
-                HttpSession session = request.getSession();
+            String json = gson.toJson(obj);
 
-                JsonObject doctor = gson.fromJson(session.getAttribute("loggedIn").toString(), JsonObject.class);
+            HttpSession session = request.getSession();
+            JsonObject doctor = gson.fromJson(session.getAttribute("loggedIn").toString(), JsonObject.class);
 
-                obj.add("doctor_id", doctor.get("doctor_id"));
-                obj.add("user_id", user_id.get("user_id"));
-                obj.remove("username");
-                String json = gson.toJson(obj);
-
-                Randevouz rz = gson.fromJson(data, Randevouz.class);
+            Randevouz rz = gson.fromJson(data, Randevouz.class);
                 String DateTime = rz.getDate_time();
                 String[] DateTimeSplit = DateTime.split(" ");
                 String Date = DateTimeSplit[0];
@@ -137,8 +131,9 @@ public class addRandevouz extends HttpServlet {
                     return;
                 }
 
-                ArrayList<Randevouz> ra = ert.databaseToDoctorRandevouzNotCancelled(doctor.get("doctor_id").getAsInt(), "cancelled");
-                for (Randevouz a : ra) {
+            ArrayList<Randevouz> ra = ert.databaseToDoctorRandevouzNotCancelled(doctor.get("doctor_id").getAsInt(), "cancelled");
+            for (Randevouz a : ra) {
+                if (a.getRandevouz_id() != obj.get("randevouz_id").getAsInt()) {
                     String[] DateTimeSplit2 = a.getDate_time().split(" ");
                     String Date2 = DateTimeSplit2[0];
                     String Time2 = DateTimeSplit2[1];
@@ -162,15 +157,10 @@ public class addRandevouz extends HttpServlet {
 
                     }
                 }
-
-                ert.addRandevouzFromJSON(json);
-                response.setStatus(200);
-            } else {
-                response.setStatus(403);
-                response.getWriter().write("Username could not be found");
-                return;
             }
+            ert.updateRandevouzDoctor(obj.get("randevouz_id").getAsInt(), obj.get("date_time").getAsString(), obj.get("price").getAsInt(), obj.get("doctor_info").getAsString(), obj.get("status").getAsString());
 
+            response.setStatus(200);
 
         } catch (SQLException ex) {
             Logger.getLogger(addRandevouz.class.getName()).log(Level.SEVERE, null, ex);
@@ -179,6 +169,7 @@ public class addRandevouz extends HttpServlet {
         }
 
     }
+
 
     /**
      * Returns a short description of the servlet.

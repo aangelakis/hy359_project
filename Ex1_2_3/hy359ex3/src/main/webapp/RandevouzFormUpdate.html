@@ -1,0 +1,38 @@
+<div id="randevouz_form">
+
+    <header>
+        <h1>Update your randevouz</h1><br>
+    </header>
+
+    <form id="randevouzFormUpdate" name="myForm" onsubmit='updateRandevouz();return false'>
+        
+            <div class="row">
+                <div class="form-group col-md-6 col-xs-12">
+                    <label for='date_time'>Date and Time:</label>
+                    <input id='date_time' type='text' name='date_time' class="form-control"><br>
+                </div>
+
+                <div class="form-group col-md-6 col-xs-12">
+                    <label for='price'>Price:</label>
+                    <input id='price' type="number" name='price' class="form-control"
+                    min="10" max="80"><br>
+                </div>
+            </div>
+                
+            <div class="row">
+                <div class="form-group col-md-6 col-xs-12">
+                    <label for='doctor_info'>Doctor Info:</label>
+                    <input id='doctor_info' type="text" name='doctor_info' class="form-control"><br>
+                </div>
+
+                <div class="form-group col-md-6 col-xs-12">
+                    <label for='status'>Status:</label>
+                    <input id='status' type="text" name='status' class="form-control"><br>
+                </div>
+            </div>
+        
+        <input type='submit' class="btn btn-dark" value="Update Randevouz"> <!-- Press this to submit form -->
+        <div id="msg">
+        </div>
+    </form>
+</div>

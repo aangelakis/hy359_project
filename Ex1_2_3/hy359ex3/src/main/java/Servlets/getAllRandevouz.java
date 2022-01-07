@@ -10,6 +10,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import database.tables.EditDoctorTable;
 import database.tables.EditRandevouzTable;
+import database.tables.EditSimpleUserTable;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
@@ -71,6 +72,7 @@ public class getAllRandevouz extends HttpServlet {
         //  processRequest(request, response);
         EditRandevouzTable ert = new EditRandevouzTable();
         EditDoctorTable edt = new EditDoctorTable();
+        EditSimpleUserTable est = new EditSimpleUserTable();
         ArrayList<Randevouz> ra = null;
         HttpSession session = request.getSession();
         String JSON_user = (String) session.getAttribute("loggedIn");
@@ -81,6 +83,19 @@ public class getAllRandevouz extends HttpServlet {
             ra = ert.databaseToDoctorRandevouzNotCancelled(obj.get("doctor_id").getAsInt(), "cancelled");
             JsonArray json = gson.toJsonTree(ra).getAsJsonArray();
             response.getWriter().write(json.toString());
+
+
+            for (Randevouz a : ra) {
+                String user = est.databaseToJSONID(a.getUser_id());
+                String doctor = edt.databaseToJSONID(a.getDoctor_id());
+
+                JsonObject userObj = gson.fromJson(user, JsonObject.class);
+                JsonObject docObj = gson.fromJson(doctor, JsonObject.class);
+
+                String user_username = userObj.get("username").getAsString();
+                String doctor_username = docObj.get("username").getAsString();
+            }
+
         } catch (SQLException ex) {
             Logger.getLogger(getAllRandevouz.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
