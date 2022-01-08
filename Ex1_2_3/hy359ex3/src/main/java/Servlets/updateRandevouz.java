@@ -108,22 +108,23 @@ public class updateRandevouz extends HttpServlet {
             JsonObject doctor = gson.fromJson(session.getAttribute("loggedIn").toString(), JsonObject.class);
 
             Randevouz rz = gson.fromJson(data, Randevouz.class);
-                String DateTime = rz.getDate_time();
+            String DateTime = rz.getDate_time();
+            if (rz.getDate_time() != null) {
                 String[] DateTimeSplit = DateTime.split(" ");
                 String Date = DateTimeSplit[0];
                 String Time = DateTimeSplit[1];
 
-                LocalDate rz_date = LocalDate.parse(Date, formatter);
+                    LocalDate rz_date = LocalDate.parse(Date, formatter);
 
-                LocalTime early = LocalTime.parse("08:00");
-                LocalTime late = LocalTime.parse("20:30");
-                LocalTime mytime = LocalTime.parse(Time);
+                    LocalTime early = LocalTime.parse("08:00");
+                    LocalTime late = LocalTime.parse("20:30");
+                    LocalTime mytime = LocalTime.parse(Time);
 
-                if (mytime.isBefore(early) || mytime.isAfter(late)) {
-                    response.setStatus(403);
-                    response.getWriter().write("Enter a time from 08:00 to 20:30");
-                    return;
-                }
+                    if (mytime.isBefore(early) || mytime.isAfter(late)) {
+                        response.setStatus(403);
+                        response.getWriter().write("Enter a time from 08:00 to 20:30");
+                        return;
+                    }
 
                 if (rz_date.compareTo(date_now) <= 0) {
                     response.setStatus(403);
@@ -131,34 +132,66 @@ public class updateRandevouz extends HttpServlet {
                     return;
                 }
 
-            ArrayList<Randevouz> ra = ert.databaseToDoctorRandevouzNotCancelled(doctor.get("doctor_id").getAsInt(), "cancelled");
-            for (Randevouz a : ra) {
-                if (a.getRandevouz_id() != obj.get("randevouz_id").getAsInt()) {
-                    String[] DateTimeSplit2 = a.getDate_time().split(" ");
-                    String Date2 = DateTimeSplit2[0];
-                    String Time2 = DateTimeSplit2[1];
-                    LocalTime mytime2 = LocalTime.parse(Time2);
 
-                    if (Date2.equals(Date)) {
-                        Duration d1 = Duration.between(mytime, mytime2);
-                        if ((d1.getSeconds() / 60) > 0 && (d1.getSeconds() / 60) < 30) {
-                            response.setStatus(403);
-                            response.getWriter().write("There is another randevouz less than 30 minutes later than this one");
-                            return;
-                        } else if ((d1.getSeconds() / 60) < 0 && (d1.getSeconds() / 60) > -30) {
-                            response.setStatus(403);
-                            response.getWriter().write("There is another randevouz less than 30 minutes earlier than this one");
-                            return;
-                        } else if ((d1.getSeconds() / 60) == 0) {
-                            response.setStatus(403);
-                            response.getWriter().write("There is another randevouz exactly at the time you entered");
-                            return;
+                ArrayList<Randevouz> ra = ert.databaseToDoctorRandevouzNotCancelled(doctor.get("doctor_id").getAsInt(), "cancelled");
+                for (Randevouz a : ra) {
+                    if (a.getRandevouz_id() != obj.get("randevouz_id").getAsInt()) {
+                        String[] DateTimeSplit2 = a.getDate_time().split(" ");
+                        String Date2 = DateTimeSplit2[0];
+                        String Time2 = DateTimeSplit2[1];
+                        LocalTime mytime2 = LocalTime.parse(Time2);
+
+                        if (Date2.equals(Date)) {
+                            Duration d1 = Duration.between(mytime, mytime2);
+                            if ((d1.getSeconds() / 60) > 0 && (d1.getSeconds() / 60) < 30) {
+                                response.setStatus(403);
+                                response.getWriter().write("There is another randevouz less than 30 minutes later than this one");
+                                return;
+                            } else if ((d1.getSeconds() / 60) < 0 && (d1.getSeconds() / 60) > -30) {
+                                response.setStatus(403);
+                                response.getWriter().write("There is another randevouz less than 30 minutes earlier than this one");
+                                return;
+                            } else if ((d1.getSeconds() / 60) == 0) {
+                                response.setStatus(403);
+                                response.getWriter().write("There is another randevouz exactly at the time you entered");
+                                return;
+                            }
+
                         }
-
                     }
                 }
             }
-            ert.updateRandevouzDoctor(obj.get("randevouz_id").getAsInt(), obj.get("date_time").getAsString(), obj.get("price").getAsInt(), obj.get("doctor_info").getAsString(), obj.get("status").getAsString());
+            Randevouz ran = ert.databaseToRandevouz(obj.get("randevouz_id").getAsInt());
+            String date_time;
+            String doc_info;
+            String status;
+            int price;
+
+            if (!obj.has("date_time")) {
+                date_time = ran.getDate_time();
+            } else {
+                date_time = obj.get("date_time").getAsString();
+            }
+
+            if (!obj.has("doctor_info")) {
+                doc_info = ran.getDoctor_info();
+            } else {
+                doc_info = obj.get("doctor_info").getAsString();
+            }
+
+            if (!obj.has("price")) {
+                price = ran.getPrice();
+            } else {
+                price = obj.get("price").getAsInt();
+            }
+
+            if (!obj.has("status")) {
+                status = ran.getStatus();
+            } else {
+                status = obj.get("status").getAsString();
+            }
+
+            ert.updateRandevouzDoctor(obj.get("randevouz_id").getAsInt(), date_time, price, doc_info, status);
 
             response.setStatus(200);
 

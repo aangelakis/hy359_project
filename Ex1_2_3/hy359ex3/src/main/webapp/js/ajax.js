@@ -655,6 +655,14 @@ function getAllRandevouzCancel() {
             $('#ajax_update').hide();
             $('#ajax_form').html("<h1>Randevouz</h1>");
             
+            for(id in responseData) {
+                for(val in responseData[id]) {
+                    console.log(responseData[id][val]);
+                    if(responseData[id][val] === "null") {
+                        delete responseData[id][val];
+                    }
+                }
+            }
             
             for (let randevouz in responseData) {
                 var json = {};
@@ -684,6 +692,14 @@ function getAllRandevouzUpdate() {
             $('#ajax_update').hide();
             $('#ajax_form').html("<h1>Randevouz</h1>");
             
+            for(id in responseData) {
+                for(val in responseData[id]) {
+                    console.log(responseData[id][val]);
+                    if(responseData[id][val] === "null") {
+                        delete responseData[id][val];
+                    }
+                }
+            }
             
             for (let randevouz in responseData) {
                 var json = {};

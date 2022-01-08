@@ -85,7 +85,7 @@ public class getAllRandevouz extends HttpServlet {
             response.getWriter().write(json.toString());
 
 
-            for (Randevouz a : ra) {
+            /*  for (Randevouz a : ra) {
                 String user = est.databaseToJSONID(a.getUser_id());
                 String doctor = edt.databaseToJSONID(a.getDoctor_id());
 
@@ -94,7 +94,7 @@ public class getAllRandevouz extends HttpServlet {
 
                 String user_username = userObj.get("username").getAsString();
                 String doctor_username = docObj.get("username").getAsString();
-            }
+            }*/
 
         } catch (SQLException ex) {
             Logger.getLogger(getAllRandevouz.class.getName()).log(Level.SEVERE, null, ex);
