@@ -82,19 +82,30 @@ public class getAllRandevouz extends HttpServlet {
         try {
             ra = ert.databaseToDoctorRandevouzNotCancelled(obj.get("doctor_id").getAsInt(), "cancelled");
             JsonArray json = gson.toJsonTree(ra).getAsJsonArray();
-            response.getWriter().write(json.toString());
 
+            int i = 0;
+            for (i = 0; i < json.size(); i++) {
+                JsonObject obj2 = json.get(i).getAsJsonObject();
 
-            /*  for (Randevouz a : ra) {
-                String user = est.databaseToJSONID(a.getUser_id());
-                String doctor = edt.databaseToJSONID(a.getDoctor_id());
+                String user = est.databaseToJSONID(obj2.get("user_id").getAsInt());
+                String doctor = edt.databaseToJSONID(obj2.get("doctor_id").getAsInt());
 
                 JsonObject userObj = gson.fromJson(user, JsonObject.class);
                 JsonObject docObj = gson.fromJson(doctor, JsonObject.class);
 
-                String user_username = userObj.get("username").getAsString();
-                String doctor_username = docObj.get("username").getAsString();
-            }*/
+                String data = obj2.toString();
+                String replace = data.replace("user_id", "user_username");
+                String replace1 = replace.replace("doctor_id", "doctor_username");
+
+                JsonObject obj3 = gson.fromJson(replace1, JsonObject.class);
+                json.set(i, obj3);
+
+                obj3.addProperty("doctor_username", docObj.get("username").getAsString());
+                obj3.addProperty("user_username", userObj.get("username").getAsString());
+
+            }
+
+            response.getWriter().write(json.toString());
 
         } catch (SQLException ex) {
             Logger.getLogger(getAllRandevouz.class.getName()).log(Level.SEVERE, null, ex);
