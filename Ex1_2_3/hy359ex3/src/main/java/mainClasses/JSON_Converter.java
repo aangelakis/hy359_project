@@ -32,6 +32,13 @@ public class JSON_Converter {
         return msg;
     }
 
+    public SimpleUser jsonToSimpleUser(BufferedReader json) {
+        Gson gson = new Gson();
+        SimpleUser msg = gson.fromJson(json, SimpleUser.class);
+        return msg;
+    }
+
+
     public Doctor jsonToDoctor(BufferedReader json) {
         Gson gson = new Gson();
         Doctor msg = gson.fromJson(json, Doctor.class);
