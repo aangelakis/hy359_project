@@ -542,7 +542,66 @@ function addToCompareListTreatment(id) {
     xhr.send(JSONdata);
 }
 
+function showDateOfRandevouz() {
+    $("#ajax_update").hide();
+    $("#ajax_form").load("calendar.html");
+    $("#ajax_form").show();
+}
 
+function seeRandevouz() {
+   let myForm = document.getElementById("calendarForm");
+    let formData = new FormData(myForm);
+    const data = {};
+    formData.forEach((value, key) => (data[key] = value));
+    for (var key in data) {
+        if (data[key] === "") {
+            delete data[key];
+        }
+    }
+    
+    var jsonData = JSON.stringify(data);
+    
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            const responseData = JSON.parse(xhr.responseText);
+          
+            for(id in responseData) {
+                for(val in responseData[id]) {
+                    console.log(responseData[id][val]);
+                    if(responseData[id][val] === "null") {
+                        delete responseData[id][val];
+                    }
+                }
+            }
+            
+            $("#ajax_form").html("");
+            for (let randevouz in responseData) {
+                var json = {};
+                for (let x in responseData[randevouz]) {  
+                    json[x] = responseData[randevouz][x]; 
+                }
+                
+                $("#ajax_form").append("<br>");
+                $('#ajax_form').append(createTableFromJSON(json));
+                $('#ajax_form').show();
+            }
+            
+            if(responseData.length === 0) {
+                console.log("its null");
+                $("#ajax_form").html("No Randevouz found");
+            }
+        } else if (xhr.status !== 200) {
+            alert(xhr.responseText);
+            
+        }
+    };
+    console.log(jsonData);
+    xhr.open("POST", "seeRandevouz");
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.send(jsonData);
+}
+    
 function removeFromCompareList(id) {
     if (compareListTreatment !== "" && compareListTreatment !== "[") {
         JSONCompareListTreatment = compareListTreatment.slice(0, -1);
@@ -772,20 +831,6 @@ function getDoctorDataRequest() {
     };
 
     xhr.open('GET', 'Login');
-    xhr.setRequestHeader("Content-type", "application/json");
-    xhr.send();
-}
-
-function getRandevouzRequest() {
-    var xhr = new XMLHttpRequest();
-    xhr.onload = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-
-        } else if (xhr.status !== 200) {
-
-        }
-    };
-    xhr.open("GET", "seeRandevouz");
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send();
 }
