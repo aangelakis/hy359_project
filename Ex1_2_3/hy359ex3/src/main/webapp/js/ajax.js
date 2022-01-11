@@ -232,6 +232,20 @@ function createTableFromJSONUpdateRandevouz(data) {
     return html;
 }
 
+function createTableFromJSONGiveTreatment(data) {
+    var html = "<table class=" + "table table-dark" + "><tr><th>Category</th><th>Value</th></tr>";
+    for (const x in data) {
+        var category = x;
+        var value = data[x];
+        html += "<tr><td>" + category + "</td><td>" + value + "</td></tr>";
+    }
+    html += "</table>";
+
+    html += "<button class='btn btn-dark' id='" + data['randevouz_id'] + "' onclick='showTreatmentForm()'> Give Treatment " + "</button>";
+
+    html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
+    return html;
+}
 
 function compareFunctions() {
     $('#ajax_form').html("<h1>Please select how you want to compare your bloodtests</h1><br>");
@@ -831,6 +845,77 @@ function getAllRandevouzUpdate() {
     xhr.open('GET', 'getAllRandevouz');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send();
+}
+
+function showGiveTreatment() {
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            const responseData = JSON.parse(xhr.responseText);
+            $('#ajax_update').hide();
+            $('#ajax_form').html("<h1>Done Randevouz</h1>");
+
+            for (id in responseData) {
+                for (val in responseData[id]) {
+                    console.log(responseData[id][val]);
+                    if (responseData[id][val] === "null") {
+                        delete responseData[id][val];
+                    }
+                }
+            }
+
+            for (let randevouz in responseData) {
+                var json = {};
+                for (let x in responseData[randevouz]) {
+                    json[x] = responseData[randevouz][x];
+                }
+                console.log(json);
+                $('#ajax_form').append(createTableFromJSONGiveTreatment(json));
+                $('#ajax_form').show();
+            }
+        } else if (xhr.status !== 200) {
+            alert('Request failed. Returned status of ' + xhr.status);
+        }
+    };
+
+    xhr.open('GET', 'getAllRandevouzDone');
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.send();
+}
+
+function showTreatmentForm() {
+    $("#ajax_update").hide();
+    $("#ajax_form").load("giveTreatment.html");
+    $("#ajax_form").show();
+}
+
+function addTreatment() {
+    let myForm = document.getElementById('treatment_form');
+    let formData = new FormData(myForm);
+    const data = {};
+    formData.forEach((value, key) => (data[key] = value));
+    for (var key in data) {
+        if (data[key] == "") {
+            delete data[key];
+        }
+    }
+
+    var jsonData = JSON.stringify(data);
+    console.log(jsonData);
+
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            $("#ajax_form").html("Treatment has been added");
+
+        } else if (xhr.status !== 200) {
+            alert(xhr.responseText);
+
+        }
+    };
+    xhr.open('POST', 'addTreatment');
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.send(jsonData);
 }
 
 function showUpdateForm() {

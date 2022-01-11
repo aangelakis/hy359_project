@@ -1,0 +1,39 @@
+<div id="treatmentform">
+
+    <header>
+        <h1>Give Treatment</h1><br>
+    </header>
+
+    <form id="treatment_form" name="myForm" onsubmit='addTreatment();return false'>
+        
+            <div class="row">
+                <div class="form-group col-md-6 col-xs-12">
+                    <label for='username'>Username:</label>
+                    <input id='username' type='text' name='username' class="form-control" required><br>
+                </div>
+            
+                <div class="form-group col-md-6 col-xs-12">
+                    <label for='start_date'>Start Date:</label>
+                    <input id='start_date' type='date' name='start_date'  value="2022-01-01" class="form-control" required><br>
+                </div>
+            </div>
+        
+            <div class="row">
+                <div class="form-group col-md-6 col-xs-12">
+                    <label for='end_date'>End Date</label>
+                    <input id='end_date' type="date" name='end_date' value="2022-01-01" class="form-control" required><br>
+                </div>
+        
+                <div class="form-group col-md-6 col-xs-12">
+                    <label for='treatment_text'>Treatment Information:</label>
+                    <input id='treatment_text' type="text" name='treatment_text' class="form-control"><br>
+                </div>
+                
+            </div>
+            
+        
+        <input type='submit' class="btn btn-dark" value="Add Treatment"> <!-- Press this to submit form -->
+        <div id="msg">
+        </div>
+    </form>
+</div>
