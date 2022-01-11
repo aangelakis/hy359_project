@@ -84,6 +84,30 @@ public class EditTreatmentTable {
         return null;
     }
 
+    public ArrayList<Treatment> databaseToTreatmentBloodtestID(int bloodtest_id) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        ArrayList<Treatment> treatments = new ArrayList<Treatment>();
+
+        ResultSet rs;
+        try {
+            rs = stmt.executeQuery("SELECT * FROM treatment WHERE bloodtest_id = '" + bloodtest_id + "'");
+            while (rs.next()) {
+                String json = DB_Connection.getResultsToJSON(rs);
+                Gson gson = new Gson();
+                Treatment bt = gson.fromJson(json, Treatment.class);
+                treatments.add(bt);
+            }
+            return treatments;
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+        stmt.close();
+        con.close();
+        return null;
+    }
+
 
     public void createTreatmentTable() throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();

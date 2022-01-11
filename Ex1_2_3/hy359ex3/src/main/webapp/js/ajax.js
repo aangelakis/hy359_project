@@ -154,7 +154,6 @@ function createTableFromJSONDeleteDoctor(data) {
 
 
 var compareList = "[";
-var compareListTreatment = "[";
 
 function createTableFromJSONCompareBloodTests(data) {
     // compareList = "[";
@@ -167,26 +166,9 @@ function createTableFromJSONCompareBloodTests(data) {
     html += "</table>";
     html += "<button style='margin-left:5px' class='btn btn-dark' id='" + data['bloodtest_id'] + "' onclick='addToCompareList(" + data['bloodtest_id'] + ")'> Add bloodtest to compare list." + "</button>";
     html += "<button style='margin-left:5px' class='btn btn-dark' id='" + data['bloodtest_id'] + "_rem' onclick='removeFromCompareList(" + data['bloodtest_id'] + ")'> Remove bloodtest from compare list." + "</button>";
+    html += "<button style='margin-left:5px' class='btn btn-dark' id='" + data['bloodtest_id'] + "_treatment' onclick='showTreatments(" + data['bloodtest_id'] + ")'> Show treatments for this bloodtest." + "</button>";
 
-
-    html += "<div id='" + data['bloodtest_id'] + "'></div>";
-    html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
-    return html;
-}
-
-function createTableFromJSONCompareTreatMents(data) {
-    var html = "<table class=" + "table table-dark" + "><tr><th>Category</th><th>Value</th></tr>";
-    for (const x in data) {
-        var category = x;
-        var value = data[x];
-        html += "<tr><td>" + category + "</td><td>" + value + "</td></tr>";
-    }
-    html += "</table>";
-    html += "<button style='margin-left:5px' class='btn btn-dark' id='" + data['treatment_id'] + "' onclick='addToCompareListTreatment(" + data['treatment_id'] + ")'> Add treatment to treatment compare list." + "</button>";
-    html += "<button style='margin-left:5px' class='btn btn-dark' id='" + data['treatment_id'] + "_rem' onclick='removeFromCompareListTreatment(" + data['treatment_id'] + ")'> Remove treatment from treatment compare list." + "</button>";
-
-
-    html += "<div id='" + data['treatment_id'] + "'></div>";
+    html += "<div id='" + data['bloodtest_id'] + "_div'></div>";
     html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
     return html;
 }
@@ -197,35 +179,6 @@ function createTableFromJSONCompareList(data, count) {
     var html = "<table style='table-layout: fixed; width: 100%' class=" + "table table-dark" + "><tr><th>Category</th>";
     for (var i = 0; i < count; i++) {
         html += "<th>BloodTest " + (i + 1) + "</th>";
-    }
-    html += "</tr>";
-    var j = 0;
-    for (const x in data[j]) {
-        html += "<tr>";
-        flag = 0;
-        for (k = j; k < count; k++) {
-            var category = x;
-            var value = data[k][x];
-            if (flag === 0) {
-                flag = 1;
-                html += "<td>" + category + "</td><td>" + value + "</td>";
-            } else {
-                html += "<td>" + value + "</td>";
-            }
-        }
-        html += "</tr>";
-    }
-    html += "</table>";
-    html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
-    return html;
-}
-
-
-function createTableFromJSONCompareListTreatment(data, count) {
-    console.log(count);
-    var html = "<table style='table-layout: fixed; width: 100%' class=" + "table table-dark" + "><tr><th>Category</th>";
-    for (var i = 0; i < count; i++) {
-        html += "<th>Treatment " + (i + 1) + "</th>";
     }
     html += "</tr>";
     var j = 0;
@@ -279,27 +232,6 @@ function createTableFromJSONUpdateRandevouz(data) {
     return html;
 }
 
-function compareChoice() {
-    $('#ajax_form').html("<h1>Please select what you want to compare</h1><br>");
-    
-    var html = "<button style='margin-left:5px' class='btn btn-dark' id='bloodtests' onclick='compareFunctions()'>Bloodtests</button>";
-    html += "<button style='margin-left:5px' class='btn btn-dark' id='treatments' onclick='compareFunctionsTreatments()'>Treatments</button>"; 
-    
-    $("#ajax_form").show();
-    $("#ajax_update").hide();
-    $("#ajax_form").append(html);
-}
-
-function compareFunctionsTreatments(){
-    $('#ajax_form').html("<h1>Please select how you want to compare your treatments</h1><br>");
-
-    var html = "<button style='margin-left:5px' class='btn btn-dark' id='table_btn' onclick='getCompareListTreatment()'>Table</button>";
-    html += "<button style='margin-left:5px' class='btn btn-dark' id='charts_btn' onclick='getChartsTreatments()'>Charts</button>";
-    $("#ajax_form").show();
-    $("#ajax_update").hide();
-    $("#ajax_form").append(html);
-}
-
 
 function compareFunctions() {
     $('#ajax_form').html("<h1>Please select how you want to compare your bloodtests</h1><br>");
@@ -310,36 +242,6 @@ function compareFunctions() {
     $("#ajax_update").hide();
     $("#ajax_form").append(html);
 
-}
-
-
-function getChartsTreatments() {
-
-    if (compareListTreatment !== "" && compareListTreatment !== "[") {
-        JSONCompareListTreatment = compareListTreatment.slice(0, -1);
-        JSONCompareListTreatment += "]";
-        JSONCompareListTreatment = JSON.parse(JSONCompareListTreatment);
-        console.log(JSONCompareListTreatment);
-        count = JSONCompareListTreatment.length;
-
-        $('#ajax_form').html("<h1>Please select how you want to compare your treatments</h1><br>");
-
-        var html = "<button style='margin-left:5px' class='btn btn-dark' id='table_btn' onclick='getCompareList()'>Table</button>";
-        html += "<button style='margin-left:5px' class='btn btn-dark' id='charts_btn' onclick='getCharts()'>Charts</button>";
-        $("#ajax_form").append(html);
-
-
-        $('#ajax_form').append("<h1>Charts</h1>");
-        $("#ajax_form").show();
-        $("#ajax_update").hide();
-        $('#table_btn').attr('disabled', false);
-        $('#charts_btn').attr('disabled', true);
-
-        for (var i = 0; i < count; i++) {
-            $("#ajax_form").append("<div id='piechart" + i + "'</div>");
-            drawChart(i, JSONCompareListTreatment);
-        }
-    }
 }
 
 
@@ -386,8 +288,10 @@ function drawChart(i, JSONCompareList) {
     var options = {
         title: "BloodTest " + (i + 1) + " - TestDate: " + JSONCompareList[i]['test_date'] + " - Medical Center: " + JSONCompareList[i]['medical_center'] + " - AMKA: " + JSONCompareList[i]['amka'],
         //colors: ['#9d0000', '#CCCC00', '#0000FF'],
-        is3D: true,
-
+        is3D: false,
+        width: $(window).width()*0.48,
+        height: $(window).height()*0.25,
+        pieSliceText: 'value'
     };
 
     var chart = new google.visualization.PieChart(document.getElementById('piechart' + i));
@@ -469,39 +373,8 @@ function removeFromCompareList(id) {
 
 }
 
-function removeFromCompareListTreatment(id) {
-    if (compareListTreatment !== "" && compareListTreatment !== "[") {
-        JSONCompareListTreatment = compareListTreatment.slice(0, -1);
-        JSONCompareListTreatment += "]";
-        JSONCompareListTreatment = JSON.parse(JSONCompareListTreatment);
-        var flag = 0;
-        for (var i = 0; i < JSONCompareListTreatment.length; i++) {
-            if (id === JSONCompareListTreatment[i]['treatment_id']) {
-                flag = 1;
-                delete JSONCompareListTreatment[i];
-                //JSONCompareList = JSONCompareList.splice(i,1);
-                JSONCompareListTreatment = JSONCompareListTreatment.filter(function (el) {
-                    return el != null;
-                });
 
-                compareListTreatment = JSON.stringify(JSONCompareListTreatment);
-                console.log(compareListTreatment);
-                document.getElementById(id + "_rem").innerHTML = "Succesfully deleted";
-
-                break;
-            }
-        }
-        if (flag === 0) {
-            document.getElementById(id + "_rem").innerHTML = "Treatment does not exist in compare list";
-        }
-    } else {
-        document.getElementById(id + "_rem").innerHTML = "Treatment does not exist in compare list";
-    }
-
-}
-
-
-function addToCompareListTreatment(id) {
+function showTreatments(id) {
     var xhr = new XMLHttpRequest();
 
     xhr.onload = function () {
@@ -509,26 +382,15 @@ function addToCompareListTreatment(id) {
         const responseData = JSON.parse(xhr.responseText);
 
         if (xhr.readyState === 4 && xhr.status === 200) {
-
-            if (compareListTreatment.includes("\"treatment_id\":" + responseData['treatment_id'])) {
-                document.getElementById(responseData['treatment_id']).innerHTML = "Treatment already in compare list";
-                document.getElementById(responseData['treatment_id']).disabled = "true";
-
-            } else {
-                if (compareListTreatment[compareListTreatment.length - 1] === "]") {
-                    compareListTreatment = compareListTreatment.slice(0, -1);
-                    if (compareListTreatment.length !== 1) {
-                        compareListTreatment += ",";
-                    }
-                }
-                compareListTreatment += xhr.responseText + ",";
-                //console.log(JSON.parse(compareList));
-                document.getElementById(responseData['treatment_id']).innerHTML = "Succesfully added";
-
+            count = responseData.length;
+            for (treatment in responseData) {
+                document.getElementById(id + "_div").innerHTML = "<br><h3>Treatments for bloodtest_id " + id + "</h3><br>" + createTableFromJSON(responseData[treatment]);
             }
-            console.log(compareListTreatment);
+            if (count === 0) {
+                document.getElementById(id + "_div").innerHTML = "<br><h3>There are no treatments for bloodtest_" + id + "</h3>";
+            }
         } else {
-            document.getElementById(responseData['treatment_id']).innerHTML = "There was an error adding to compare list";
+            document.getElementById(id + "_div").innerHTML = "<br><h3>There was an error finding the treatments for bloodtest_" + id + "</h3>";
         }
     };
 
@@ -542,6 +404,7 @@ function addToCompareListTreatment(id) {
     xhr.send(JSONdata);
 }
 
+
 function showDateOfRandevouz() {
     $("#ajax_update").hide();
     $("#ajax_form").load("calendar.html");
@@ -549,7 +412,7 @@ function showDateOfRandevouz() {
 }
 
 function seeRandevouz() {
-   let myForm = document.getElementById("calendarForm");
+    let myForm = document.getElementById("calendarForm");
     let formData = new FormData(myForm);
     const data = {};
     formData.forEach((value, key) => (data[key] = value));
@@ -558,42 +421,42 @@ function seeRandevouz() {
             delete data[key];
         }
     }
-    
+
     var jsonData = JSON.stringify(data);
-    
+
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             const responseData = JSON.parse(xhr.responseText);
-          
-            for(id in responseData) {
-                for(val in responseData[id]) {
+
+            for (id in responseData) {
+                for (val in responseData[id]) {
                     console.log(responseData[id][val]);
-                    if(responseData[id][val] === "null") {
+                    if (responseData[id][val] === "null") {
                         delete responseData[id][val];
                     }
                 }
             }
-            
+
             $("#ajax_form").html("");
             for (let randevouz in responseData) {
                 var json = {};
-                for (let x in responseData[randevouz]) {  
-                    json[x] = responseData[randevouz][x]; 
+                for (let x in responseData[randevouz]) {
+                    json[x] = responseData[randevouz][x];
                 }
-                
+
                 $("#ajax_form").append("<br>");
                 $('#ajax_form').append(createTableFromJSON(json));
                 $('#ajax_form').show();
             }
-            
-            if(responseData.length === 0) {
+
+            if (responseData.length === 0) {
                 console.log("its null");
                 $("#ajax_form").html("No Randevouz found");
             }
         } else if (xhr.status !== 200) {
             alert(xhr.responseText);
-            
+
         }
     };
     console.log(jsonData);
@@ -601,34 +464,34 @@ function seeRandevouz() {
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send(jsonData);
 }
-    
+
 function removeFromCompareList(id) {
-    if (compareListTreatment !== "" && compareListTreatment !== "[") {
-        JSONCompareListTreatment = compareListTreatment.slice(0, -1);
-        JSONCompareListTreatment += "]";
-        JSONCompareListTreatment = JSON.parse(JSONCompareListTreatment);
+    if (compareList !== "" && compareList !== "[") {
+        JSONCompareList = compareList.slice(0, -1);
+        JSONCompareList += "]";
+        JSONCompareList = JSON.parse(JSONCompareList);
         var flag = 0;
-        for (var i = 0; i < JSONCompareListTreatment.length; i++) {
-            if (id === JSONCompareListTreatment[i]['treatment_id']) {
+        for (var i = 0; i < JSONCompareList.length; i++) {
+            if (id === JSONCompareList[i]['bloodtest_id']) {
                 flag = 1;
-                delete JSONCompareListTreatment[i];
+                delete JSONCompareList[i];
                 //JSONCompareList = JSONCompareList.splice(i,1);
-                JSONCompareListTreatment = JSONCompareListTreatment.filter(function (el) {
+                JSONCompareList = JSONCompareList.filter(function (el) {
                     return el != null;
                 });
 
-                compareListTreatment = JSON.stringify(JSONCompareListTreatment);
-                console.log(compareListTreatment);
+                compareList = JSON.stringify(JSONCompareList);
+                console.log(compareList);
                 document.getElementById(id + "_rem").innerHTML = "Succesfully deleted";
 
                 break;
             }
         }
         if (flag === 0) {
-            document.getElementById(id + "_rem").innerHTML = "Treatment does not exist in compare list";
+            document.getElementById(id + "_rem").innerHTML = "Bloodtest does not exist in compare list";
         }
     } else {
-        document.getElementById(id + "_rem").innerHTML = "Treatment does not exist in compare list";
+        document.getElementById(id + "_rem").innerHTML = "Bloodtest does not exist in compare list";
     }
 
 }
@@ -655,39 +518,6 @@ function getCompareList() {
         //for (id in JSONCompareList) {
         //delete obj[id]["bloodtest_id"];
         $('#ajax_form').append(createTableFromJSONCompareList(JSONCompareList, count));
-
-        //}
-
-    } else {
-        $('#ajax_form').append("<h1>Your Compare List is empty</h1>");
-    }
-    $('#table_btn').attr('disabled', true);
-    $('#charts_btn').attr('disabled', false);
-
-}
-
-
-function getCompareListTreatment() {
-    if (compareListTreatment !== "" && compareListTreatment !== "[") {
-        JSONCompareListTreatment = compareListTreatment.slice(0, -1);
-        JSONCompareListTreatment += "]";
-        JSONCompareListTreatment = JSON.parse(JSONCompareListTreatment);
-        console.log(JSONCompareListTreatment);
-        count = JSONCompareListTreatment.length;
-
-        $('#ajax_form').html("<h1>Please select how you want to compare your treatments</h1><br>");
-
-        var html = "<button style='margin-left:5px' class='btn btn-dark' id='table_btn' onclick='getCompareList()'>Table</button>";
-        html += "<button style='margin-left:5px' class='btn btn-dark' id='charts_btn' onclick='getCharts()'>Charts</button>";
-        $("#ajax_form").append(html);
-
-        $('#ajax_form').append("<h1>Compare List</h1>");
-        $("#ajax_form").show();
-        $("#ajax_update").hide();
-
-        //for (id in JSONCompareList) {
-        //delete obj[id]["bloodtest_id"];
-        $('#ajax_form').append(createTableFromJSONCompareListTreatment(JSONCompareListTreatment, count));
 
         //}
 
@@ -1082,6 +912,7 @@ function getBloodTestAMKA() {
                         delete obj[id][val + "_level"];
                     }
                 }
+                $('#ajax_form').append("<h3>Bloodtest_id " + obj[id]['bloodtest_id'] + "</h3>");
                 $('#ajax_form').append(createTableFromJSONCompareBloodTests(obj[id]));
                 i++;
             }
@@ -1115,7 +946,7 @@ function getTreatments() {
             var count = Object.keys(obj).length;
             $('#ajax_form').html("<h3>" + count + " Treatments</h3>");
             for (id in obj) {
-                $('#ajax_form').append(createTableFromJSONCompareTreatMents(obj[id]));
+                $('#ajax_form').append(createTableFromJSON(obj[id]));
             }
 
         } else if (xhr.status !== 200) {

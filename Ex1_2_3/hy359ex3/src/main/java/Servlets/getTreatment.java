@@ -107,35 +107,36 @@ public class getTreatment extends HttpServlet {
 
         JSON_Converter jc = new JSON_Converter();
 
-        String treatment_id_string = jc.getJSONFromAjax(request.getReader());
+        String bloodtest_id_string = jc.getJSONFromAjax(request.getReader());
 
-        System.out.println(treatment_id_string);
+        System.out.println(bloodtest_id_string);
 
-        JsonObject jsonObject = new JsonParser().parse(treatment_id_string).getAsJsonObject();
-        int treatment_id = Integer.parseInt(jsonObject.get("id").getAsString());
+        JsonObject jsonObject = new JsonParser().parse(bloodtest_id_string).getAsJsonObject();
+        int bloodtest_id = Integer.parseInt(jsonObject.get("id").getAsString());
 
-        System.out.println(treatment_id);
+        System.out.println(bloodtest_id);
 
         EditTreatmentTable ett = new EditTreatmentTable();
 
-        Treatment t = null;
+        ArrayList<Treatment> t = new ArrayList<Treatment>();
         try {
-            t = ett.databaseToTreatment(treatment_id);
+            t = ett.databaseToTreatmentBloodtestID(bloodtest_id);
         } catch (SQLException ex) {
             Logger.getLogger(CertifyDoctors.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(CertifyDoctors.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        String tJson = ett.treatmentToJSON(t);
-        System.out.println(tJson);
+        Gson gson = new Gson();
+        JsonArray jsonTreatments = gson.toJsonTree(t).getAsJsonArray();
+
+        System.out.println(jsonTreatments);
         response.setStatus(200);
         PrintWriter out = response.getWriter();
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(tJson);
+        response.getWriter().write(jsonTreatments.toString());
     }
-
 
     /**
      * Returns a short description of the servlet.
