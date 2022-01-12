@@ -23,7 +23,6 @@ function loginPOST() {
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             console.log(JSON.parse(xhr.responseText));
-            json = JSON.parse(xhr.responseText);
 
             if (xhr.responseText === "admin") {
                 $("#login").load("choicesAdmin.html");
@@ -31,6 +30,7 @@ function loginPOST() {
                 $("#login").load("choicesDoctor.html");
             } else {
                 $("#login").load("choices1.html");
+                json = JSON.parse(xhr.responseText);
                 user_lon = json['lon'];
                 user_lat = json['lat'];
             }
