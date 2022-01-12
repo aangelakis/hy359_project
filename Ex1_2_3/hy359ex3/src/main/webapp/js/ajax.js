@@ -22,7 +22,7 @@ function loginPOST() {
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            console.log(JSON.parse(xhr.responseText));
+            console.log(xhr.responseText);
 
             if (xhr.responseText === "admin") {
                 $("#login").load("choicesAdmin.html");
