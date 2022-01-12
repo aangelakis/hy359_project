@@ -86,7 +86,7 @@ public class Login extends HttpServlet {
                 if (username.equals("admin") && password.equals("admin12*")) {
                     response.getWriter().write("admin");
                 } else {
-                    response.getWriter().write("user");
+                    response.getWriter().write(JSON_user);
                 }
                 session.setAttribute("loggedIn", JSON_user);
                 response.setStatus(200);

@@ -15,19 +15,26 @@
  }*/
 
 var randevouzID_button;
+var user_lon;
+var user_lat;
 
 function loginPOST() {
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            console.log(xhr.responseText);
-            if (xhr.responseText === "user") {
-                $("#login").load("choices1.html");
+            console.log(JSON.parse(xhr.responseText));
+            json = JSON.parse(xhr.responseText);
+
+            if (xhr.responseText === "admin") {
+                $("#login").load("choicesAdmin.html");
             } else if (xhr.responseText === "doc") {
                 $("#login").load("choicesDoctor.html");
             } else {
-                $("#login").load("choicesAdmin.html");
+                $("#login").load("choices1.html");
+                user_lon = json['lon'];
+                user_lat = json['lat'];
             }
+
             $("#ajax_update").load("update.html");
             $("#ajax_update").hide();
             $("#ajax_form").html("<h1>Successful Login</h1><br>");
@@ -59,6 +66,8 @@ function isLoggedIn() {
                 $("#login").load("choicesAdmin.html");
             } else if (responseData.doctor_id === undefined) {
                 $("#login").load("choices1.html");
+                user_lon = responseData['lon'];
+                user_lat = responseData['lat'];
             } else {
                 $("#login").load("choicesDoctor.html");
             }
@@ -303,8 +312,8 @@ function drawChart(i, JSONCompareList) {
         title: "BloodTest " + (i + 1) + " - TestDate: " + JSONCompareList[i]['test_date'] + " - Medical Center: " + JSONCompareList[i]['medical_center'] + " - AMKA: " + JSONCompareList[i]['amka'],
         //colors: ['#9d0000', '#CCCC00', '#0000FF'],
         is3D: false,
-        width: $(window).width()*0.48,
-        height: $(window).height()*0.25,
+        width: $(window).width() * 0.48,
+        height: $(window).height() * 0.25,
         pieSliceText: 'value'
     };
 
@@ -386,6 +395,201 @@ function removeFromCompareList(id) {
     }
 
 }
+
+
+var doc_lat1 = [];
+var doc_lon1 = [];
+var doc_id1 = [];
+var doctors;
+
+function findDoctorsSorted() {
+    $('#ajax_form').html("<h1>Find doctors sorted by distance, by time of arrival by car or by price.</h1><br>");
+
+    var html = "<button style='margin-left:5px' class='btn btn-dark' id='distance' onclick='getDoctorsByDistance()'>By distance</button>";
+    html += "<button style='margin-left:5px' class='btn btn-dark' id='time' onclick='getDoctorsByTime()'>Time of arrival by car</button>";
+    html += "<button style='margin-left:5px' class='btn btn-dark' id='price' onclick='getDoctorsByPrice()'>By price</button>";
+    $("#ajax_form").show();
+    $("#ajax_update").hide();
+    $("#ajax_form").append(html);
+
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            const responseData = JSON.parse(xhr.responseText);
+            doctors = responseData;
+            for (let doctor in responseData) {
+                for (let x in responseData[doctor]) {
+
+                    if (x === 'lat') {
+                        doc_lat1.push(responseData[doctor][x]);
+                    }
+
+                    if (x == 'lon') {
+                        doc_lon1.push(responseData[doctor][x]);
+                    }
+
+                    if (x == 'doctor_id') {
+                        doc_id1.push(responseData[doctor][x]);
+                    }
+                }
+            }
+        }
+    };
+
+    xhr.open('GET', 'getDoctors');
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.send();
+}
+
+
+function getDoctorsByDistance() {
+
+    const data = null;
+
+    const xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === this.DONE) {
+            console.log(xhr.responseText);
+            const responseData = JSON.parse(xhr.responseText);
+            var arr = responseData["distances"][0];
+            console.log(arr);
+
+            $('#ajax_form').html("<h1>Find doctors sorted by distance, by time of arrival by car or by price.</h1><br>");
+
+            var html = "<button style='margin-left:5px' class='btn btn-dark' id='distance' onclick='getDoctorsByDistance()' disabled>By distance</button>";
+            html += "<button style='margin-left:5px' class='btn btn-dark' id='time' onclick='getDoctorsByTime()'>Time of arrival by car</button>";
+            html += "<button style='margin-left:5px' class='btn btn-dark' id='price' onclick='getDoctorsByPrice()'>By price</button>";
+            $("#ajax_form").append(html);
+
+            for (var i = 0; i < arr.length; i++) {
+                for (var j = 0; j < (arr.length - i - 1); j++) {
+                    if (arr[j] > arr[j + 1]) {
+                        var temp = arr[j];
+                        var temp1 = doc_id1[j];
+                        arr[j] = arr[j + 1];
+                        arr[j + 1] = temp;
+                        doc_id1[j] = doc_id1[j + 1];
+                        doc_id1[j + 1] = temp1;
+                    }
+                }
+            }
+
+            for (var i = 0; i < arr.length; i++) {
+                var json = {};
+                for (var j = 0; j < arr.length; j++) {
+
+                    if (doctors[j]['doctor_id'] === doc_id1[i]) {
+                        for (x in doctors[j]) {
+                            if (x == 'firstname' || x == 'lastname' || x == 'address' || x == 'city' || x == 'doctor_info' || x == 'specialty' || x == 'telephone') {
+                                json[x] = doctors[j][x];
+                            }
+                        }
+                        break;
+                    }
+                }
+                json["Distance (in kilometers)"] = (arr[i] / 1000).toFixed(2);
+                console.log(json);
+                $('#ajax_form').append("<h3>Doctor " + (+i + +1) + "</h3> " + createTableFromJSON(json));
+            }
+            console.log(doctors);
+            console.log(arr);
+            console.log(doc_id1);
+
+
+        }
+    });
+
+    var destinations = "";
+    for (i in doc_lat1) {
+        destinations += doc_lat1[i] + "," + doc_lon1[i] + ";";
+    }
+    destinations = destinations.substring(0, destinations.length - 1);
+    console.log(destinations);
+
+    xhr.open("GET", "https://trueway-matrix.p.rapidapi.com/CalculateDrivingMatrix?origins=" + user_lat + "%2C" + user_lon + "&destinations=" + destinations);
+    xhr.setRequestHeader("x-rapidapi-host", "trueway-matrix.p.rapidapi.com");
+    xhr.setRequestHeader("x-rapidapi-key", "f02e0addd4msh104747e67169815p1bca4fjsn394646e1a455");
+
+    xhr.send(data);
+}
+
+function getDoctorsByTime() {
+    const data = null;
+
+    const xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === this.DONE) {
+            console.log(xhr.responseText);
+            const responseData = JSON.parse(xhr.responseText);
+            var arr = responseData["durations"][0];
+            console.log(arr);
+
+            $('#ajax_form').html("<h1>Find doctors sorted by distance, by time of arrival by car or by price.</h1><br>");
+
+            var html = "<button style='margin-left:5px' class='btn btn-dark' id='distance' onclick='getDoctorsByDistance()'>By distance</button>";
+            html += "<button style='margin-left:5px' class='btn btn-dark' id='time' onclick='getDoctorsByTime()' disabled>Time of arrival by car</button>";
+            html += "<button style='margin-left:5px' class='btn btn-dark' id='price' onclick='getDoctorsByPrice()'>By price</button>";
+            $("#ajax_form").append(html);
+
+            for (var i = 0; i < arr.length; i++) {
+                for (var j = 0; j < (arr.length - i - 1); j++) {
+                    if (arr[j] > arr[j + 1]) {
+                        var temp = arr[j];
+                        var temp1 = doc_id1[j];
+                        arr[j] = arr[j + 1];
+                        arr[j + 1] = temp;
+                        doc_id1[j] = doc_id1[j + 1];
+                        doc_id1[j + 1] = temp1;
+                    }
+                }
+            }
+
+            for (var i = 0; i < arr.length; i++) {
+                var json = {};
+                for (var j = 0; j < arr.length; j++) {
+
+                    if (doctors[j]['doctor_id'] === doc_id1[i]) {
+                        for (x in doctors[j]) {
+                            if (x == 'firstname' || x == 'lastname' || x == 'address' || x == 'city' || x == 'doctor_info' || x == 'specialty' || x == 'telephone') {
+                                json[x] = doctors[j][x];
+                            }
+                        }
+                        break;
+                    }
+                }
+                json["Time by car (in minutes)"] = (arr[i] / 60).toFixed(2);
+                console.log(json);
+                $('#ajax_form').append("<h3>Doctor " + (+i + +1) + "</h3> " + createTableFromJSON(json));
+            }
+            console.log(doctors);
+            console.log(arr);
+            console.log(doc_id1);
+
+
+        }
+    });
+
+    var destinations = "";
+    for (i in doc_lat1) {
+        destinations += doc_lat1[i] + "," + doc_lon1[i] + ";";
+    }
+    destinations = destinations.substring(0, destinations.length - 1);
+    console.log(destinations);
+
+    xhr.open("GET", "https://trueway-matrix.p.rapidapi.com/CalculateDrivingMatrix?origins=" + user_lat + "%2C" + user_lon + "&destinations=" + destinations);
+    xhr.setRequestHeader("x-rapidapi-host", "trueway-matrix.p.rapidapi.com");
+    xhr.setRequestHeader("x-rapidapi-key", "f02e0addd4msh104747e67169815p1bca4fjsn394646e1a455");
+
+    xhr.send(data);
+}
+
+
+
+
 
 
 function showTreatments(id) {

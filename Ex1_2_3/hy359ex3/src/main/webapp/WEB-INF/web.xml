@@ -76,6 +76,10 @@
         <servlet-name>getTreatment</servlet-name>
         <servlet-class>Servlets.getTreatment</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>getDoctorsSorted</servlet-name>
+        <servlet-class>Servlets.getDoctorsSortedDistance</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Register</servlet-name>
         <url-pattern>/Register</url-pattern>
@@ -151,6 +155,10 @@
     <servlet-mapping>
         <servlet-name>getTreatment</servlet-name>
         <url-pattern>/getTreatment</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>getDoctorsSorted</servlet-name>
+        <url-pattern>/getDoctorsSorted</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
