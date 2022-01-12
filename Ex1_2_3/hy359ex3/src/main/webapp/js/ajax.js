@@ -588,10 +588,6 @@ function getDoctorsByTime() {
 }
 
 
-
-
-
-
 function showTreatments(id) {
     var xhr = new XMLHttpRequest();
 
@@ -679,6 +675,64 @@ function seeRandevouz() {
     };
     console.log(jsonData);
     xhr.open("POST", "seeRandevouz");
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.send(jsonData);
+}
+
+function seeBloodtestsDoctor() {
+    let myForm = document.getElementById("usernameForm");
+    let formData = new FormData(myForm);
+    const data = {};
+    formData.forEach((value, key) => (data[key] = value));
+    for (var key in data) {
+        if (data[key] === "") {
+            delete data[key];
+        }
+    }
+
+    var jsonData = JSON.stringify(data);
+
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            const responseData = JSON.parse(xhr.responseText);
+
+            for (id in responseData) {
+                for (val in responseData[id]) {
+                    console.log(responseData[id][val]);
+                    if (responseData[id][val] === 0) {
+                            delete responseData[id][val];
+                    }
+                }
+            }
+            
+            for (id in responseData) {
+                for (val in responseData[id]) {
+                    console.log(responseData[id][val]);
+                    if (responseData[id][val] === "null") {
+                            delete responseData[id][val];
+                    }
+                }
+            }
+
+            $("#ajax_form").html("");
+            for (let randevouz in responseData) {
+                var json = {};
+                for (let x in responseData[randevouz]) {
+                    json[x] = responseData[randevouz][x];
+                }
+
+                $("#ajax_form").append("<br>");
+                $('#ajax_form').append(createTableFromJSONCompareBloodTests(json));
+                $('#ajax_form').show();
+            }
+        } else if (xhr.status !== 200) {
+            alert(xhr.responseText);
+
+        }
+    };
+    console.log(jsonData);
+    xhr.open("POST", "SeeBloodTestsDoctor");
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send(jsonData);
 }
@@ -857,6 +911,12 @@ function getDataRequest() {
     xhr.open('GET', 'Login');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send();
+}
+
+function showBloodTestUsernameForm() {
+    $("#ajax_update").hide();
+    $("#ajax_form").load("bloodTestUsernameForm.html");
+    $("#ajax_form").show();
 }
 
 function getDoctorDataRequest() {

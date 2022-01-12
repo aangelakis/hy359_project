@@ -48,6 +48,27 @@ public class EditRandevouzTable {
         return null;
     }
 
+    public ArrayList<Randevouz> databaseToRandevouzUserID(int user_id) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        ArrayList<Randevouz> randevouz = new ArrayList<Randevouz>();
+        ResultSet rs;
+        try {
+            rs = stmt.executeQuery("SELECT * FROM randevouz WHERE user_id= '" + user_id + "'");
+            while (rs.next()) {
+                String json = DB_Connection.getResultsToJSON(rs);
+                Gson gson = new Gson();
+                Randevouz ra = gson.fromJson(json, Randevouz.class);
+                randevouz.add(ra);
+            }
+            return randevouz;
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+        return null;
+    }
+
     public ArrayList<Randevouz> databaseToDoctorRandevouz(int doctor_id) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
