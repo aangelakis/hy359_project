@@ -5,29 +5,24 @@
     </header>
 
     <form id="randevouzForm" name="myForm" onsubmit='addRandevouz();return false'>
-        
-            <div class="row">
             
-                <div class="form-group col-md-6 col-xs-12">
+                <div>
                     <label for='date_time'>Date and Time:</label>
                     <input id='date_time' type='text' name='date_time' class="form-control" required><br>
                 </div>
-            </div>
-        
-            <div class="row">
-                <div class="form-group col-md-6 col-xs-12">
+           
+                <div>
                     <label for='price'>Price:</label>
                     <input id='price' type="number" name='price' class="form-control" required 
                     min="10" max="80"><br>
                 </div>
         
-                <div class="form-group col-md-6 col-xs-12">
+                <div>
                     <label for='doctor_info'>Doctor Info:</label>
                     <input id='doctor_info' type="text" name='doctor_info' class="form-control"><br>
                 </div>
-            </div>
-            
-        
+           
+           
         <input type='submit' class="btn btn-dark" value="Add Randevouz"> <!-- Press this to submit form -->
         <div id="msg">
         </div>
