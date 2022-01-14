@@ -399,7 +399,6 @@ function removeFromCompareList(id) {
 
 var doc_lat1 = [];
 var doc_lon1 = [];
-var doc_id1 = [];
 var doctors;
 
 function findDoctorsSorted() {
@@ -411,6 +410,9 @@ function findDoctorsSorted() {
     $("#ajax_form").show();
     $("#ajax_update").hide();
     $("#ajax_form").append(html);
+
+    doc_lat1 = [];
+    doc_lon1 = [];
 
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
@@ -428,9 +430,11 @@ function findDoctorsSorted() {
                         doc_lon1.push(responseData[doctor][x]);
                     }
 
-                    if (x == 'doctor_id') {
+                /*    if (x == 'doctor_id') {
                         doc_id1.push(responseData[doctor][x]);
-                    }
+                        doc_id1_dis.push(responseData[doctor][x]);
+                        doc_id1_time.push(responseData[doctor][x]);
+                    }*/
                 }
             }
         }
@@ -454,7 +458,23 @@ function getDoctorsByDistance() {
             console.log(xhr.responseText);
             const responseData = JSON.parse(xhr.responseText);
             var arr = responseData["distances"][0];
+            //var doc_id1_temp = doc_id1;
+            //doc_id1_dis = doc_id1;
+
+            console.log(doctors);
+            var doc_id1_dis = [];
+            
+            for (let doctor in doctors) {
+                for (let x in doctors[doctor]) {
+                    if (x == 'doctor_id') {
+                        doc_id1_dis.push(doctors[doctor][x]);
+                    }
+                }
+            }
+
             console.log(arr);
+            console.log(doc_id1_dis);
+
 
             $('#ajax_form').html("<h1>Find doctors sorted by distance, by time of arrival by car or by price.</h1><br>");
 
@@ -467,11 +487,11 @@ function getDoctorsByDistance() {
                 for (var j = 0; j < (arr.length - i - 1); j++) {
                     if (arr[j] > arr[j + 1]) {
                         var temp = arr[j];
-                        var temp1 = doc_id1[j];
+                        var temp1 = doc_id1_dis[j];
                         arr[j] = arr[j + 1];
                         arr[j + 1] = temp;
-                        doc_id1[j] = doc_id1[j + 1];
-                        doc_id1[j + 1] = temp1;
+                        doc_id1_dis[j] = doc_id1_dis[j + 1];
+                        doc_id1_dis[j + 1] = temp1;
                     }
                 }
             }
@@ -480,7 +500,7 @@ function getDoctorsByDistance() {
                 var json = {};
                 for (var j = 0; j < arr.length; j++) {
 
-                    if (doctors[j]['doctor_id'] === doc_id1[i]) {
+                    if (doctors[j]['doctor_id'] === doc_id1_dis[i]) {
                         for (x in doctors[j]) {
                             if (x == 'firstname' || x == 'lastname' || x == 'address' || x == 'city' || x == 'doctor_info' || x == 'specialty' || x == 'telephone') {
                                 json[x] = doctors[j][x];
@@ -490,12 +510,13 @@ function getDoctorsByDistance() {
                     }
                 }
                 json["Distance (in kilometers)"] = (arr[i] / 1000).toFixed(2);
-                console.log(json);
+                //console.log(json);
                 $('#ajax_form').append("<h3>Doctor " + (+i + +1) + "</h3> " + createTableFromJSON(json));
             }
             console.log(doctors);
             console.log(arr);
-            console.log(doc_id1);
+            //console.log(doc_id1_temp);
+            console.log(doc_id1_dis);
 
 
         }
@@ -526,7 +547,21 @@ function getDoctorsByTime() {
             console.log(xhr.responseText);
             const responseData = JSON.parse(xhr.responseText);
             var arr = responseData["durations"][0];
+            //var doc_id1_temp = doc_id1;
+            //doc_id1_time = doc_id1;
+
+            var doc_id1_time = [];
+            
+            for (let doctor in doctors) {
+                for (let x in doctors[doctor]) {
+                    if (x == 'doctor_id') {
+                        doc_id1_time.push(doctors[doctor][x]);
+                    }
+                }
+            }
+
             console.log(arr);
+            console.log(doc_id1_time);
 
             $('#ajax_form').html("<h1>Find doctors sorted by distance, by time of arrival by car or by price.</h1><br>");
 
@@ -539,11 +574,11 @@ function getDoctorsByTime() {
                 for (var j = 0; j < (arr.length - i - 1); j++) {
                     if (arr[j] > arr[j + 1]) {
                         var temp = arr[j];
-                        var temp1 = doc_id1[j];
+                        var temp1 = doc_id1_time[j];
                         arr[j] = arr[j + 1];
                         arr[j + 1] = temp;
-                        doc_id1[j] = doc_id1[j + 1];
-                        doc_id1[j + 1] = temp1;
+                        doc_id1_time[j] = doc_id1_time[j + 1];
+                        doc_id1_time[j + 1] = temp1;
                     }
                 }
             }
@@ -552,7 +587,7 @@ function getDoctorsByTime() {
                 var json = {};
                 for (var j = 0; j < arr.length; j++) {
 
-                    if (doctors[j]['doctor_id'] === doc_id1[i]) {
+                    if (doctors[j]['doctor_id'] === doc_id1_time[i]) {
                         for (x in doctors[j]) {
                             if (x == 'firstname' || x == 'lastname' || x == 'address' || x == 'city' || x == 'doctor_info' || x == 'specialty' || x == 'telephone') {
                                 json[x] = doctors[j][x];
@@ -562,12 +597,12 @@ function getDoctorsByTime() {
                     }
                 }
                 json["Time by car (in minutes)"] = (arr[i] / 60).toFixed(2);
-                console.log(json);
+                //console.log(json);
                 $('#ajax_form').append("<h3>Doctor " + (+i + +1) + "</h3> " + createTableFromJSON(json));
             }
             console.log(doctors);
             console.log(arr);
-            console.log(doc_id1);
+            console.log(doc_id1_time);
 
 
         }
@@ -701,16 +736,16 @@ function seeBloodtestsDoctor() {
                 for (val in responseData[id]) {
                     console.log(responseData[id][val]);
                     if (responseData[id][val] === 0) {
-                            delete responseData[id][val];
+                        delete responseData[id][val];
                     }
                 }
             }
-            
+
             for (id in responseData) {
                 for (val in responseData[id]) {
                     console.log(responseData[id][val]);
                     if (responseData[id][val] === "null") {
-                            delete responseData[id][val];
+                        delete responseData[id][val];
                     }
                 }
             }
