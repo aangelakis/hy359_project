@@ -23,14 +23,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import mainClasses.JSON_Converter;
 import mainClasses.Randevouz;
 
 /**
  *
  * @author ΜΙΧΑΛΗΣ
  */
-@WebServlet(name = "getAllRandevouz", urlPatterns = {"/getAllRandevouz"})
-public class getAllRandevouz extends HttpServlet {
+@WebServlet(name = "seeRandevouz", urlPatterns = {"/seeRandevouz"})
+public class seeRandevouz extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -48,10 +49,10 @@ public class getAllRandevouz extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet getAllRandevouz</title>");
+            out.println("<title>Servlet seeRandevouz</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet getAllRandevouz at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet seeRandevouz at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -69,7 +70,21 @@ public class getAllRandevouz extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        //  processRequest(request, response);
+        processRequest(request, response);
+    }
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // processRequest(request, response);
         EditRandevouzTable ert = new EditRandevouzTable();
         EditDoctorTable edt = new EditDoctorTable();
         EditSimpleUserTable est = new EditSimpleUserTable();
@@ -77,14 +92,31 @@ public class getAllRandevouz extends HttpServlet {
         HttpSession session = request.getSession();
         String JSON_user = (String) session.getAttribute("loggedIn");
 
-
         Gson gson = new Gson();
+
+        JSON_Converter jc = new JSON_Converter();
+
+        String date = jc.getJSONFromAjax(request.getReader());
+
+        JsonObject objDate = gson.fromJson(date, JsonObject.class);
+
         JsonObject obj = gson.fromJson(JSON_user, JsonObject.class);
         try {
             ra = ert.databaseToDoctorRandevouzNotCancelled(obj.get("doctor_id").getAsInt(), "cancelled");
+
+            int j;
+            for (j = 0; j < ra.size(); j++) {
+                String[] DateTimeSplit = ra.get(j).getDate_time().split(" ");
+                String DateSplit = DateTimeSplit[0];
+                if (!(objDate.get("date").getAsString().equals(DateSplit))) {
+                    ra.remove(j);
+                    j = -1;
+                }
+            }
+
             JsonArray json = gson.toJsonTree(ra).getAsJsonArray();
 
-            int i = 0;
+            int i;
             for (i = 0; i < json.size(); i++) {
                 JsonObject obj2 = json.get(i).getAsJsonObject();
 
@@ -107,7 +139,6 @@ public class getAllRandevouz extends HttpServlet {
                 }
 
                 obj3.addProperty("doctor_username", docObj.get("username").getAsString());
-
             }
 
             response.getWriter().write(json.toString());
@@ -117,21 +148,6 @@ public class getAllRandevouz extends HttpServlet {
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(getAllRandevouz.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-    }
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
     }
 
     /**

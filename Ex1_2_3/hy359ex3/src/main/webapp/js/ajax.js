@@ -995,6 +995,7 @@ function addRandevouz() {
     let formData = new FormData(myForm);
     const data = {};
     formData.append("status", "free");
+    formData.append("user_id",0);
     formData.forEach((value, key) => (data[key] = value));
     for (var key in data) {
         if (data[key] === "") {

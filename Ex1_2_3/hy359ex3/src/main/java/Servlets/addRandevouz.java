@@ -101,83 +101,73 @@ public class addRandevouz extends HttpServlet {
         EditRandevouzTable ert = new EditRandevouzTable();
         EditSimpleUserTable eut = new EditSimpleUserTable();
 
+        HttpSession session = request.getSession();
+
+        JsonObject doctor = gson.fromJson(session.getAttribute("loggedIn").toString(), JsonObject.class);
+
+        obj.add("doctor_id", doctor.get("doctor_id"));
+        String json = gson.toJson(obj);
+
+        Randevouz rz = gson.fromJson(data, Randevouz.class);
+        String DateTime = rz.getDate_time();
+        String[] DateTimeSplit = DateTime.split(" ");
+        String Date = DateTimeSplit[0];
+        String Time = DateTimeSplit[1];
+
+        LocalDate rz_date = LocalDate.parse(Date, formatter);
+
+        LocalTime early = LocalTime.parse("08:00");
+        LocalTime late = LocalTime.parse("20:30");
+        LocalTime mytime = LocalTime.parse(Time);
+
+        if (mytime.isBefore(early) || mytime.isAfter(late)) {
+            response.setStatus(403);
+            response.getWriter().write("Enter a time from 08:00 to 20:30");
+            return;
+        }
+
+        if (rz_date.compareTo(date_now) <= 0) {
+            response.setStatus(403);
+            response.getWriter().write("Wrong Date");
+            return;
+        }
+
+        ArrayList<Randevouz> ra;
         try {
-            if (eut.usernameInDataBase(obj.get("username").getAsString())) {
-                JsonObject user_id = gson.fromJson(eut.usernameToID(obj.get("username").getAsString()), JsonObject.class);
-                HttpSession session = request.getSession();
+            ra = ert.databaseToDoctorRandevouzNotCancelled(doctor.get("doctor_id").getAsInt(), "cancelled");
+            for (Randevouz a : ra) {
+            String[] DateTimeSplit2 = a.getDate_time().split(" ");
+            String Date2 = DateTimeSplit2[0];
+            String Time2 = DateTimeSplit2[1];
+            LocalTime mytime2 = LocalTime.parse(Time2);
 
-                JsonObject doctor = gson.fromJson(session.getAttribute("loggedIn").toString(), JsonObject.class);
-
-                obj.add("doctor_id", doctor.get("doctor_id"));
-                obj.add("user_id", user_id.get("user_id"));
-                obj.remove("username");
-                String json = gson.toJson(obj);
-
-                Randevouz rz = gson.fromJson(data, Randevouz.class);
-                String DateTime = rz.getDate_time();
-                String[] DateTimeSplit = DateTime.split(" ");
-                String Date = DateTimeSplit[0];
-                String Time = DateTimeSplit[1];
-
-                LocalDate rz_date = LocalDate.parse(Date, formatter);
-
-                LocalTime early = LocalTime.parse("08:00");
-                LocalTime late = LocalTime.parse("20:30");
-                LocalTime mytime = LocalTime.parse(Time);
-
-                if (mytime.isBefore(early) || mytime.isAfter(late)) {
+            if (Date2.equals(Date)) {
+                Duration d1 = Duration.between(mytime, mytime2);
+                if ((d1.getSeconds() / 60) > 0 && (d1.getSeconds() / 60) < 30) {
                     response.setStatus(403);
-                    response.getWriter().write("Enter a time from 08:00 to 20:30");
+                    response.getWriter().write("There is another randevouz less than 30 minutes later than this one");
+                    return;
+                } else if ((d1.getSeconds() / 60) < 0 && (d1.getSeconds() / 60) > -30) {
+                    response.setStatus(403);
+                    response.getWriter().write("There is another randevouz less than 30 minutes earlier than this one");
+                    return;
+                } else if ((d1.getSeconds() / 60) == 0) {
+                    response.setStatus(403);
+                    response.getWriter().write("There is another randevouz exactly at the time you entered");
                     return;
                 }
 
-                if (rz_date.compareTo(date_now) <= 0) {
-                    response.setStatus(403);
-                    response.getWriter().write("Wrong Date");
-                    return;
-                }
-
-                ArrayList<Randevouz> ra = ert.databaseToDoctorRandevouzNotCancelled(doctor.get("doctor_id").getAsInt(), "cancelled");
-                for (Randevouz a : ra) {
-                    String[] DateTimeSplit2 = a.getDate_time().split(" ");
-                    String Date2 = DateTimeSplit2[0];
-                    String Time2 = DateTimeSplit2[1];
-                    LocalTime mytime2 = LocalTime.parse(Time2);
-
-                    if (Date2.equals(Date)) {
-                        Duration d1 = Duration.between(mytime, mytime2);
-                        if ((d1.getSeconds() / 60) > 0 && (d1.getSeconds() / 60) < 30) {
-                            response.setStatus(403);
-                            response.getWriter().write("There is another randevouz less than 30 minutes later than this one");
-                            return;
-                        } else if ((d1.getSeconds() / 60) < 0 && (d1.getSeconds() / 60) > -30) {
-                            response.setStatus(403);
-                            response.getWriter().write("There is another randevouz less than 30 minutes earlier than this one");
-                            return;
-                        } else if ((d1.getSeconds() / 60) == 0) {
-                            response.setStatus(403);
-                            response.getWriter().write("There is another randevouz exactly at the time you entered");
-                            return;
-                        }
-
-                    }
-                }
-
-                ert.addRandevouzFromJSON(json);
-                response.setStatus(200);
-            } else {
-                response.setStatus(403);
-                response.getWriter().write("Username could not be found");
-                return;
             }
-
+        }
+            System.out.println(json);
+        ert.addRandevouzFromJSON(json);
+        response.setStatus(200);
 
         } catch (SQLException ex) {
             Logger.getLogger(addRandevouz.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(addRandevouz.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 
     /**
