@@ -80,6 +80,14 @@
         <servlet-name>getDoctorsSorted</servlet-name>
         <servlet-class>Servlets.getDoctorsSortedDistance</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>seeRandevouzUser</servlet-name>
+        <servlet-class>Servlets.seeRandevouzUser</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>selectRandevouz</servlet-name>
+        <servlet-class>Servlets.selectRandevouz</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Register</servlet-name>
         <url-pattern>/Register</url-pattern>
@@ -159,6 +167,14 @@
     <servlet-mapping>
         <servlet-name>getDoctorsSorted</servlet-name>
         <url-pattern>/getDoctorsSorted</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>seeRandevouzUser</servlet-name>
+        <url-pattern>/seeRandevouzUser</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>selectRandevouz</servlet-name>
+        <url-pattern>/selectRandevouz</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

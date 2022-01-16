@@ -48,6 +48,15 @@ public class EditRandevouzTable {
         return null;
     }
 
+    public void selectRandevouz(int user_id, int randevouz_id, String user_info) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        String update = "UPDATE randevouz SET user_id='" + user_id + "', user_info='" + user_info + "', status = 'selected' WHERE randevouz_id = '" + randevouz_id + "'";
+        stmt.executeUpdate(update);
+        stmt.close();
+        con.close();
+    }
+
     public ArrayList<Randevouz> databaseToRandevouzUserID(int user_id) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
@@ -69,6 +78,27 @@ public class EditRandevouzTable {
         return null;
     }
 
+    public ArrayList<Randevouz> databaseToRandevouzUserIDNotCancelled(int user_id) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        ArrayList<Randevouz> randevouz = new ArrayList<Randevouz>();
+        ResultSet rs;
+        try {
+            rs = stmt.executeQuery("SELECT * FROM randevouz WHERE user_id= '" + user_id + "' AND status != 'cancelled'");
+            while (rs.next()) {
+                String json = DB_Connection.getResultsToJSON(rs);
+                Gson gson = new Gson();
+                Randevouz ra = gson.fromJson(json, Randevouz.class);
+                randevouz.add(ra);
+            }
+            return randevouz;
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+        return null;
+    }
+
     public ArrayList<Randevouz> databaseToDoctorRandevouz(int doctor_id) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
@@ -76,6 +106,28 @@ public class EditRandevouzTable {
         ResultSet rs;
         try {
             rs = stmt.executeQuery("SELECT * FROM randevouz WHERE doctor_id= '" + doctor_id + "'");
+            while (rs.next()) {
+                String json = DB_Connection.getResultsToJSON(rs);
+                Gson gson = new Gson();
+                Randevouz ra = gson.fromJson(json, Randevouz.class);
+                randevouz.add(ra);
+            }
+            return randevouz;
+
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public ArrayList<Randevouz> databaseToDoctorRandevouzFree(int doctor_id) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        ArrayList<Randevouz> randevouz = new ArrayList<Randevouz>();
+        ResultSet rs;
+        try {
+            rs = stmt.executeQuery("SELECT * FROM randevouz WHERE doctor_id= '" + doctor_id + "' AND status = 'free'");
             while (rs.next()) {
                 String json = DB_Connection.getResultsToJSON(rs);
                 Gson gson = new Gson();

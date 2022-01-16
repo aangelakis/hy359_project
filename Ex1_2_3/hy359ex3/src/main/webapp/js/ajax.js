@@ -131,6 +131,53 @@ function createTableFromJSONCertify(data) {
     return html;
 }
 
+function createTableFromJSONSeeRandevouz(data) {
+    var html = "<table class=" + "table table-dark" + "><tr><th>Category</th><th>Value</th></tr>";
+    for (const x in data) {
+        var category = x;
+        var value = data[x];
+        html += "<tr><td>" + category + "</td><td>" + value + "</td></tr>";
+    }
+    html += "</table>";
+    html += "<button class='btn btn-dark' id='" + data['doctor_id'] + "' onclick='seeAvailableRandevouz(" + data['doctor_id'] + ")'> See available randevouz of doctor " + data['lastname'] + "</button>";
+
+    html += "<div id='" + data['doctor_id'] + "_div'></div>";
+    html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
+    return html;
+}
+
+
+function createTableFromJSONPickRandevouz(data) {
+    var html = "<table class=" + "table table-dark" + "><tr><th>Category</th><th>Value</th></tr>";
+    for (const x in data) {
+        var category = x;
+        var value = data[x];
+        html += "<tr><td>" + category + "</td><td>" + value + "</td></tr>";
+    }
+    html += "</table>";
+    html += "<button class='btn btn-dark' id='" + data['randevouz_id'] + "_ra' onclick='pickRandevouz(" + data['randevouz_id'] + ")'> Pick this randevouz " + "</button>";
+
+    html += "<div id='" + data['randevouz_id'] + "ra_div'></div>";
+    html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
+    return html;
+}
+
+
+function createTableFromJSONCancelRandevouzUser(data) {
+    var html = "<table class=" + "table table-dark" + "><tr><th>Category</th><th>Value</th></tr>";
+    for (const x in data) {
+        var category = x;
+        var value = data[x];
+        html += "<tr><td>" + category + "</td><td>" + value + "</td></tr>";
+    }
+    html += "</table>";
+    html += "<button class='btn btn-dark' id='" + data['randevouz_id'] + "_ra' onclick='cancelRandevouzUser(" + data['randevouz_id'] + ")'> Cancel this randevouz " + "</button>";
+
+    html += "<div id='" + data['randevouz_id'] + "ra_div'></div>";
+    html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
+    return html;
+}
+
 function createTableFromJSONDeleteUser(data) {
     var html = "<table class=" + "table table-dark" + "><tr><th>Category</th><th>Value</th></tr>";
     for (const x in data) {
@@ -430,11 +477,11 @@ function findDoctorsSorted() {
                         doc_lon1.push(responseData[doctor][x]);
                     }
 
-                /*    if (x == 'doctor_id') {
-                        doc_id1.push(responseData[doctor][x]);
-                        doc_id1_dis.push(responseData[doctor][x]);
-                        doc_id1_time.push(responseData[doctor][x]);
-                    }*/
+                    /*    if (x == 'doctor_id') {
+                     doc_id1.push(responseData[doctor][x]);
+                     doc_id1_dis.push(responseData[doctor][x]);
+                     doc_id1_time.push(responseData[doctor][x]);
+                     }*/
                 }
             }
         }
@@ -463,7 +510,7 @@ function getDoctorsByDistance() {
 
             console.log(doctors);
             var doc_id1_dis = [];
-            
+
             for (let doctor in doctors) {
                 for (let x in doctors[doctor]) {
                     if (x == 'doctor_id') {
@@ -502,7 +549,7 @@ function getDoctorsByDistance() {
 
                     if (doctors[j]['doctor_id'] === doc_id1_dis[i]) {
                         for (x in doctors[j]) {
-                            if (x == 'firstname' || x == 'lastname' || x == 'address' || x == 'city' || x == 'doctor_info' || x == 'specialty' || x == 'telephone') {
+                            if (x == 'doctor_id' || x == 'firstname' || x == 'lastname' || x == 'address' || x == 'city' || x == 'doctor_info' || x == 'specialty' || x == 'telephone') {
                                 json[x] = doctors[j][x];
                             }
                         }
@@ -511,7 +558,7 @@ function getDoctorsByDistance() {
                 }
                 json["Distance (in kilometers)"] = (arr[i] / 1000).toFixed(2);
                 //console.log(json);
-                $('#ajax_form').append("<h3>Doctor " + (+i + +1) + "</h3> " + createTableFromJSON(json));
+                $('#ajax_form').append("<h3>Doctor " + (+i + +1) + "</h3> " + createTableFromJSONSeeRandevouz(json));
             }
             console.log(doctors);
             console.log(arr);
@@ -551,7 +598,7 @@ function getDoctorsByTime() {
             //doc_id1_time = doc_id1;
 
             var doc_id1_time = [];
-            
+
             for (let doctor in doctors) {
                 for (let x in doctors[doctor]) {
                     if (x == 'doctor_id') {
@@ -589,7 +636,7 @@ function getDoctorsByTime() {
 
                     if (doctors[j]['doctor_id'] === doc_id1_time[i]) {
                         for (x in doctors[j]) {
-                            if (x == 'firstname' || x == 'lastname' || x == 'address' || x == 'city' || x == 'doctor_info' || x == 'specialty' || x == 'telephone') {
+                            if (x == 'doctor_id' || x == 'firstname' || x == 'lastname' || x == 'address' || x == 'city' || x == 'doctor_info' || x == 'specialty' || x == 'telephone') {
                                 json[x] = doctors[j][x];
                             }
                         }
@@ -598,7 +645,7 @@ function getDoctorsByTime() {
                 }
                 json["Time by car (in minutes)"] = (arr[i] / 60).toFixed(2);
                 //console.log(json);
-                $('#ajax_form').append("<h3>Doctor " + (+i + +1) + "</h3> " + createTableFromJSON(json));
+                $('#ajax_form').append("<h3>Doctor " + (+i + +1) + "</h3> " + createTableFromJSONSeeRandevouz(json));
             }
             console.log(doctors);
             console.log(arr);
@@ -622,6 +669,133 @@ function getDoctorsByTime() {
     xhr.send(data);
 }
 
+
+function seeAvailableRandevouz(id) {
+    var xhr = new XMLHttpRequest();
+
+    xhr.onload = function () {
+        console.log(xhr.responseText);
+        const responseData = JSON.parse(xhr.responseText);
+        console.log(responseData);
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            count = responseData.length;
+            document.getElementById(id + "_div").innerHTML = "<br><h3>Randevouz of this doctor " + "</h3><br>";
+            for (var i = 0; i < count; i++) {
+                delete responseData[i]['doctor_id'];
+                delete responseData[i]['user_id'];
+                delete responseData[i]['user_info'];
+                document.getElementById(id + "_div").innerHTML += "<h3>Randevouz " + (+i + 1) + "</h3><br>" + createTableFromJSONPickRandevouz(responseData[i]);
+            }
+            if (count === 0) {
+                document.getElementById(id + "_div").innerHTML = "<br><h3>There are no randevouz for this doctor " + "</h3>";
+            }
+        } else {
+            document.getElementById(id + "_div").innerHTML = "<br><h3>There was an error finding the randevouz for this doctor " + "</h3>";
+        }
+    };
+
+    console.log(id);
+    let text = {};
+    text["id"] = id;
+    var JSONdata = JSON.stringify(text);
+    console.log(JSONdata);
+
+    xhr.open('POST', 'seeRandevouzUser');
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.send(JSONdata);
+}
+
+
+function pickRandevouz(id) {
+
+    var html = "<br><label for='randevouztext'>More info about you.</label><br><textarea id='randevouztext' class='form-control' rows='4'></textarea>"
+    html += "<button class='btn btn-dark' id='" + id + "_pickRa' onclick='lockRandevouz(" + id + ")'> Confirm this randevouz " + "</button>";
+    html += "<div id='" + id + "_divRa'></div>";
+
+    document.getElementById(id + "ra_div").innerHTML = html;
+}
+
+function lockRandevouz(id) {
+    var xhr = new XMLHttpRequest();
+
+
+    xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            document.getElementById(id + "_divRa").innerHTML = "<br><h3>Succesfully selected randevouz" + "</h3><br>";
+            document.getElementById(id + "_pickRa").disabled = "true";
+            document.getElementById("randevouztext").readOnly = true;
+
+        } else {
+            document.getElementById(id + "_divRa").innerHTML = "<br><h3>There was an error selecting this randevouz" + "</h3>";
+        }
+    };
+
+    console.log(id);
+    let text = {};
+    text["id"] = id;
+    text["info"] = document.getElementById("randevouztext").value;
+    var JSONdata = JSON.stringify(text);
+    console.log(JSONdata);
+
+    xhr.open('POST', 'selectRandevouz');
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.send(JSONdata);
+}
+
+
+function getMyRandevouz() {
+    const xhr = new XMLHttpRequest();
+
+    xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+
+            const obj = JSON.parse(xhr.responseText);
+            console.log(obj);
+            $("#ajax_form").show();
+            $("#ajax_update").hide();
+            var count = Object.keys(obj).length;
+            $('#ajax_form').html("<h3>" + count + " Randevouz</h3>");
+            for (id in obj) {
+                delete obj[id]['doctor_id'];
+                delete obj[id]['user_id'];
+                delete obj[id]['status'];
+                $('#ajax_form').append(createTableFromJSONCancelRandevouzUser(obj[id]));
+            }
+
+        } else if (xhr.status !== 200) {
+            $('#ajax_form').html('Request failed. Returned status of ' + xhr.status + "<br>"
+                    + JSON.stringify(xhr.responseText));
+        }
+    };
+
+    xhr.open("GET", "seeRandevouzUser");
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.send();
+}
+
+function cancelRandevouzUser(id) {
+    const xhr = new XMLHttpRequest();
+
+    xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            document.getElementById(id + "ra_div").innerHTML = "<h3>Succesfully cancelled your randevouz</h3>";
+            document.getElementById(id + "_ra").disabled = "true";
+        } else if (xhr.status !== 200) {
+            document.getElementById(id + "ra_div").innerHTML = "<h3>There was an error cancelling your randevouz</h3>";
+        }
+    };
+
+    let text = {};
+    text["id"] = id;
+    var JSONdata = JSON.stringify(text);
+    console.log(JSONdata);
+
+    xhr.open("POST", "cancelRandevouz");
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.send(JSONdata);
+}
 
 function showTreatments(id) {
     var xhr = new XMLHttpRequest();
@@ -995,7 +1169,7 @@ function addRandevouz() {
     let formData = new FormData(myForm);
     const data = {};
     formData.append("status", "free");
-    formData.append("user_id",0);
+    formData.append("user_id", 0);
     formData.forEach((value, key) => (data[key] = value));
     for (var key in data) {
         if (data[key] === "") {
