@@ -91,11 +91,21 @@ public class addTreatment extends HttpServlet {
         LocalDate date_now = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+
         JSON_Converter jc = new JSON_Converter();
 
         String data = jc.getJSONFromAjax(request.getReader());
 
         JsonObject obj = gson.fromJson(data, JsonObject.class);
+
+        LocalDate start_date = LocalDate.parse(obj.get("start_date").getAsString());
+        LocalDate end_date = LocalDate.parse(obj.get("end_date").getAsString());
+
+        if (end_date.isBefore(start_date)) {
+            response.setStatus(403);
+            response.getWriter().write("End Date cannot be before Start Date");
+            return;
+        }
 
         EditTreatmentTable ett = new EditTreatmentTable();
         EditSimpleUserTable eut = new EditSimpleUserTable();

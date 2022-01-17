@@ -98,6 +98,14 @@ public class updateRandevouz extends HttpServlet {
 
         JsonObject obj = gson.fromJson(data, JsonObject.class);
 
+        if (obj.has("status")) {
+            if (!"free".equals(obj.get("status").getAsString()) && !"selected".equals(obj.get("status").getAsString()) && !"cancelled".equals(obj.get("status").getAsString()) && !"done".equals(obj.get("status").getAsString())) {
+                response.setStatus(403);
+                response.getWriter().write("This is not a valid status");
+                return;
+            }
+        }
+
         EditRandevouzTable ert = new EditRandevouzTable();
         EditSimpleUserTable eut = new EditSimpleUserTable();
 
