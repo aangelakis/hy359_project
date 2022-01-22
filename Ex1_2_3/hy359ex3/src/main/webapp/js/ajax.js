@@ -766,12 +766,18 @@ function getSentMessages() {
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
 
+            $('#ajax_form').html("<h1>My Messages</h1><br>");
+
+            var html = "<button style='margin-left:5px' class='btn btn-dark' id='inbox_mes' onclick='getInboxMessages()'>Inbox</button>";
+            html += "<button style='margin-left:5px' class='btn btn-dark' id='sent_mes' onclick='getSentMessages()'>Sent</button>";
+            $("#ajax_form").append(html);
+
             const obj = JSON.parse(xhr.responseText);
             console.log(obj);
             $("#ajax_form").show();
             $("#ajax_update").hide();
             var count = Object.keys(obj).length;
-            $('#ajax_form').html("<h3>" + count + " Messages </h3>");
+            $('#ajax_form').append("<h3>" + count + " Messages </h3>");
             for (id in obj) {
                 // delete obj[id]['user_id'];
                 $('#ajax_form').append(createTableFromJSON(obj[id]));
@@ -801,12 +807,18 @@ function getInboxMessages() {
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
 
+            $('#ajax_form').html("<h1>My Messages</h1><br>");
+
+            var html = "<button style='margin-left:5px' class='btn btn-dark' id='inbox_mes' onclick='getInboxMessages()'>Inbox</button>";
+            html += "<button style='margin-left:5px' class='btn btn-dark' id='sent_mes' onclick='getSentMessages()'>Sent</button>";
+            $("#ajax_form").append(html);
+
             const obj = JSON.parse(xhr.responseText);
             console.log(obj);
             $("#ajax_form").show();
             $("#ajax_update").hide();
             var count = Object.keys(obj).length;
-            $('#ajax_form').html("<h3>" + count + " Messages </h3>");
+            $('#ajax_form').append("<h3>" + count + " Messages </h3>");
             for (id in obj) {
                 // delete obj[id]['user_id'];
                 $('#ajax_form').append(createTableFromJSON(obj[id]));
