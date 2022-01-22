@@ -13,6 +13,10 @@ public class Message {
 
     int message_id,doctor_id, user_id;
     String bloodtype;
+    String date_time;
+    String message;
+    String sender;
+    int blood_donation;
 
     public String getBloodtype() {
         return bloodtype;
@@ -28,10 +32,6 @@ public class Message {
     public void setMessage_id(int message_id) {
         this.message_id = message_id;
     }
-    String date_time;
-    String message;
-    String sender;
-    int blood_donation;
 
     public int getBlood_donation() {
         return blood_donation;
@@ -64,8 +64,6 @@ public class Message {
     public void setDate_time(String date_time) {
         this.date_time = date_time;
     }
-
-
 
     public String getMessage() {
         return message;

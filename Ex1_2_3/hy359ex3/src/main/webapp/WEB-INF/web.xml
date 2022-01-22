@@ -88,6 +88,14 @@
         <servlet-name>selectRandevouz</servlet-name>
         <servlet-class>Servlets.selectRandevouz</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>sendMessageToDoctor</servlet-name>
+        <servlet-class>Servlets.sendMessageToDoctor</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>getMessagesUser</servlet-name>
+        <servlet-class>Servlets.getMessagesUser</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Register</servlet-name>
         <url-pattern>/Register</url-pattern>
@@ -175,6 +183,14 @@
     <servlet-mapping>
         <servlet-name>selectRandevouz</servlet-name>
         <url-pattern>/selectRandevouz</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>sendMessageToDoctor</servlet-name>
+        <url-pattern>/sendMessageToDoctor</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>getMessagesUser</servlet-name>
+        <url-pattern>/getMessagesUser</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

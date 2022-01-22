@@ -166,12 +166,20 @@ function createTableFromJSONPickRandevouz(data) {
 function createTableFromJSONCancelRandevouzUser(data) {
     var html = "<table class=" + "table table-dark" + "><tr><th>Category</th><th>Value</th></tr>";
     for (const x in data) {
+        if (x === 'doctor_id') {
+            continue;
+        }
         var category = x;
         var value = data[x];
         html += "<tr><td>" + category + "</td><td>" + value + "</td></tr>";
     }
     html += "</table>";
-    html += "<button class='btn btn-dark' id='" + data['randevouz_id'] + "_ra' onclick='cancelRandevouzUser(" + data['randevouz_id'] + ")'> Cancel this randevouz " + "</button>";
+    if (data['status'] === 'done') {
+        html += "<button class='btn btn-dark' style='margin-left:5px' id='" + data['randevouz_id'] + "_mes' onclick='composeMessageToDoctor(" + data['doctor_id'] + ")'> Compose message to Doctor " + "</button>";
+        html += "<div id='" + data['doctor_id'] + "mes_div'></div>";
+    } else {
+        html += "<button class='btn btn-dark' id='" + data['randevouz_id'] + "_ra' onclick='cancelRandevouzUser(" + data['randevouz_id'] + ")'> Cancel this randevouz " + "</button>";
+    }
 
     html += "<div id='" + data['randevouz_id'] + "ra_div'></div>";
     html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
@@ -742,6 +750,122 @@ function lockRandevouz(id) {
     xhr.send(JSONdata);
 }
 
+function getMyMessages() {
+    $('#ajax_form').html("<h1>My Messages</h1><br>");
+
+    var html = "<button style='margin-left:5px' class='btn btn-dark' id='inbox_mes' onclick='getInboxMessages()'>Inbox</button>";
+    html += "<button style='margin-left:5px' class='btn btn-dark' id='sent_mes' onclick='getSentMessages()'>Sent</button>";
+    $("#ajax_form").show();
+    $("#ajax_update").hide();
+    $("#ajax_form").append(html);
+}
+
+function getSentMessages() {
+    const xhr = new XMLHttpRequest();
+
+    xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+
+            const obj = JSON.parse(xhr.responseText);
+            console.log(obj);
+            $("#ajax_form").show();
+            $("#ajax_update").hide();
+            var count = Object.keys(obj).length;
+            $('#ajax_form').html("<h3>" + count + " Messages </h3>");
+            for (id in obj) {
+                // delete obj[id]['user_id'];
+                $('#ajax_form').append(createTableFromJSON(obj[id]));
+            }
+
+        } else if (xhr.status !== 200) {
+            $('#ajax_form').html('Request failed. Returned status of ' + xhr.status + "<br>"
+                    + JSON.stringify(xhr.responseText));
+        }
+    };
+
+    let text = {};
+    text["type"] = "sent";
+    var JSONdata = JSON.stringify(text);
+    console.log(JSONdata);
+
+    xhr.open("POST", "getMessagesUser");
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.send(JSONdata);
+}
+
+
+function getInboxMessages() {
+    const xhr = new XMLHttpRequest();
+
+    xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+
+            const obj = JSON.parse(xhr.responseText);
+            console.log(obj);
+            $("#ajax_form").show();
+            $("#ajax_update").hide();
+            var count = Object.keys(obj).length;
+            $('#ajax_form').html("<h3>" + count + " Messages </h3>");
+            for (id in obj) {
+                // delete obj[id]['user_id'];
+                $('#ajax_form').append(createTableFromJSON(obj[id]));
+            }
+
+        } else if (xhr.status !== 200) {
+            $('#ajax_form').html('Request failed. Returned status of ' + xhr.status + "<br>"
+                    + JSON.stringify(xhr.responseText));
+        }
+    };
+
+    let text = {};
+    text["type"] = "inbox";
+    var JSONdata = JSON.stringify(text);
+    console.log(JSONdata);
+
+    xhr.open("POST", "getMessagesUser");
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.send(JSONdata);
+}
+
+
+
+function composeMessageToDoctor(id) {
+
+    var html = "<br><label for='messagetext'>Message</label><br><textarea id='messagetext' class='form-control' rows='4'></textarea>"
+    html += "<button class='btn btn-dark' id='" + id + "_pickmes' onclick='sendMessageToDoctor(" + id + ")'> Send message to Doctor " + "</button>";
+    html += "<div id='" + id + "_divmes'></div>";
+
+    document.getElementById(id + "mes_div").innerHTML = html;
+}
+
+function sendMessageToDoctor(id) {
+    var xhr = new XMLHttpRequest();
+
+
+    xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            document.getElementById(id + "_divmes").innerHTML = "<br><h3>Succesfully sent." + "</h3><br>";
+            document.getElementById(id + "_pickmes").disabled = "true";
+            document.getElementById("messagetext").readOnly = true;
+
+        } else {
+            document.getElementById(id + "_divmes").innerHTML = "<br><h3>There was an error sending your message." + "</h3>";
+        }
+    };
+
+    console.log(id);
+    let text = {};
+    text["id"] = id;
+    text["message"] = document.getElementById("messagetext").value;
+    var JSONdata = JSON.stringify(text);
+    console.log(JSONdata);
+
+    xhr.open('POST', 'sendMessageToDoctor');
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.send(JSONdata);
+}
 
 function getMyRandevouz() {
     const xhr = new XMLHttpRequest();
@@ -756,9 +880,7 @@ function getMyRandevouz() {
             var count = Object.keys(obj).length;
             $('#ajax_form').html("<h3>" + count + " Randevouz</h3>");
             for (id in obj) {
-                delete obj[id]['doctor_id'];
                 delete obj[id]['user_id'];
-                delete obj[id]['status'];
                 $('#ajax_form').append(createTableFromJSONCancelRandevouzUser(obj[id]));
             }
 
