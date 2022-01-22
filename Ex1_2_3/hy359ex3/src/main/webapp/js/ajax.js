@@ -541,6 +541,40 @@ function getDoctorsByPrice() {
 }
 
 
+function getCovidData() {
+    const data = null;
+
+    const xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === this.DONE) {
+            var json = JSON.parse(xhr.responseText);
+            console.log(json);
+            delete json[0]['latitude'];
+            delete json[0]['longitude'];
+            var lastChangeDate = new Date(json[0]['lastChange']).toLocaleDateString();
+            var lastChangeTime = new Date(json[0]['lastChange']).toLocaleTimeString();
+            var lastUpdateDate = new Date(json[0]['lastUpdate']).toLocaleDateString();
+            var lastUpdateTime = new Date(json[0]['lastUpdate']).toLocaleTimeString();
+            var lastChange = lastChangeDate + " " + lastChangeTime;
+            var lastUpdate = lastUpdateDate + " " + lastUpdateTime;
+
+            json[0]['lastUpdate'] = lastUpdate;
+            json[0]['lastChange'] = lastChange;
+            
+            $('#ajax_form').html("<h1>COVID-19 Statistics Greece</h1>" + createTableFromJSON(json[0]));
+            $('#ajax_form').show();
+        }
+    });
+
+    xhr.open("GET", "https://covid-19-data.p.rapidapi.com/country/code?code=gr&format=json");
+    xhr.setRequestHeader("x-rapidapi-host", "covid-19-data.p.rapidapi.com");
+    xhr.setRequestHeader("x-rapidapi-key", "f02e0addd4msh104747e67169815p1bca4fjsn394646e1a455");
+
+    xhr.send(data);
+}
+
 function getDoctorsByDistance() {
 
     const data = null;
