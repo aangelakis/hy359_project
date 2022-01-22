@@ -96,6 +96,10 @@
         <servlet-name>getMessagesUser</servlet-name>
         <servlet-class>Servlets.getMessagesUser</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>getDoctorsByPrice</servlet-name>
+        <servlet-class>Servlets.getDoctorsByPrice</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Register</servlet-name>
         <url-pattern>/Register</url-pattern>
@@ -191,6 +195,10 @@
     <servlet-mapping>
         <servlet-name>getMessagesUser</servlet-name>
         <url-pattern>/getMessagesUser</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>getDoctorsByPrice</servlet-name>
+        <url-pattern>/getDoctorsByPrice</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

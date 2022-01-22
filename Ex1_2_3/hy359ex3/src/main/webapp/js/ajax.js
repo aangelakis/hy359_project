@@ -500,6 +500,46 @@ function findDoctorsSorted() {
     xhr.send();
 }
 
+function getDoctorsByPrice() {
+    var xhr = new XMLHttpRequest();
+
+
+    $('#ajax_form').html("<h1>Find doctors sorted by distance, by time of arrival by car or by price.</h1><br>");
+
+    xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            const responseData = JSON.parse(xhr.responseText);
+            var doctors = responseData;
+            console.log(doctors);
+
+            var html = "<button style='margin-left:5px' class='btn btn-dark' id='distance' onclick='getDoctorsByDistance()'>By distance</button>";
+            html += "<button style='margin-left:5px' class='btn btn-dark' id='time' onclick='getDoctorsByTime()'>Time of arrival by car</button>";
+            html += "<button style='margin-left:5px' class='btn btn-dark' id='price' onclick='getDoctorsByPrice()'>By price</button>";
+            $("#ajax_form").show();
+            $("#ajax_update").hide();
+            $("#ajax_form").append(html);
+
+            for (var i = 0; i < doctors.length; i++) {
+                var json = {};
+                for (x in doctors[i]) {
+                    if (x == 'doctor_id' || x == 'firstname' || x == 'lastname' || x == 'address' || x == 'city' || x == 'doctor_info' || x == 'specialty' || x == 'telephone' || x == 'price') {
+                        if (doctors[i]['price'] === 0 && x === 'price') {
+                            json[x] = 'unknown';
+                        } else {
+                            json[x] = doctors[i][x];
+                        }
+                    }
+                }
+                $('#ajax_form').append("<h3>Doctor " + (+i + +1) + "</h3> " + createTableFromJSONSeeRandevouz(json));
+            }
+        }
+    };
+
+    xhr.open('GET', 'getDoctorsByPrice');
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.send();
+}
+
 
 function getDoctorsByDistance() {
 
