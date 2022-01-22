@@ -187,6 +187,9 @@ function createTableFromJSONCancelRandevouzUser(data) {
 }
 
 function createTableFromJSONDeleteUser(data) {
+    if(data['username'] === 'admin'){
+        return;
+    }
     var html = "<table class=" + "table table-dark" + "><tr><th>Category</th><th>Value</th></tr>";
     for (const x in data) {
         var category = x;
