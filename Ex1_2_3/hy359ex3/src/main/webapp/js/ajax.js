@@ -17,13 +17,12 @@
 var randevouzID_button;
 var user_lon;
 var user_lat;
-
+var interval;
 function loginPOST() {
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             console.log(xhr.responseText);
-
             if (xhr.responseText === "admin") {
                 $("#login").load("choicesAdmin.html");
             } else if (xhr.responseText === "doc") {
@@ -33,12 +32,14 @@ function loginPOST() {
                 json = JSON.parse(xhr.responseText);
                 user_lon = json['lon'];
                 user_lat = json['lat'];
+                alertUser();
+                interval = setInterval(alertUser, 1000 * 60 * 10);
+
             }
 
             $("#ajax_update").load("update.html");
             $("#ajax_update").hide();
             $("#ajax_form").html("<h1>Successful Login</h1><br>");
-
         } else if (xhr.status !== 200) {
             console.log(xhr.responseText);
             if (xhr.responseText === "user") {
@@ -56,6 +57,20 @@ function loginPOST() {
     xhr.send(data);
 }
 
+function alertUser() {
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var json = JSON.parse(xhr.responseText);
+            alert('Your randevouz with doctor ' + json['lastname'] + ' is in ' + json['diff'] + ' hours.');
+            clearInterval(interval);
+        }
+    };
+    xhr.open('GET', 'alertUser');
+    xhr.send();
+    //interval = setInterval(alertUser, 1000*5);
+}
+
 function isLoggedIn() {
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
@@ -68,6 +83,11 @@ function isLoggedIn() {
                 $("#login").load("choices1.html");
                 user_lon = responseData['lon'];
                 user_lat = responseData['lat'];
+                alertUser();
+                interval = setInterval(alertUser, 1000 * 60 * 10);
+
+                //interval = setInterval(alertUser(), 1000*3);
+                //setInterval(alertUser(), 1000 * 36000);
             } else {
                 $("#login").load("choicesDoctor.html");
             }
@@ -83,7 +103,6 @@ function isLoggedIn() {
     };
     xhr.open('GET', 'Logout');
     xhr.setRequestHeader("Content-type", "application/json");
-
     xhr.send();
 }
 
@@ -94,6 +113,7 @@ function logout() {
             $('#login').load("login_register.html");
             $("#ajax_form").html("<h1>Successful Logout</h1><br>");
             $("#ajax_update").hide();
+            clearInterval(interval);
         } else if (xhr.status !== 200) {
             alert('Request failed. Returned status of ' + xhr.status);
         }
@@ -140,7 +160,6 @@ function createTableFromJSONSeeRandevouz(data) {
     }
     html += "</table>";
     html += "<button class='btn btn-dark' id='" + data['doctor_id'] + "' onclick='seeAvailableRandevouz(" + data['doctor_id'] + ")'> See available randevouz of doctor " + data['lastname'] + "</button>";
-
     html += "<div id='" + data['doctor_id'] + "_div'></div>";
     html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
     return html;
@@ -156,7 +175,6 @@ function createTableFromJSONPickRandevouz(data) {
     }
     html += "</table>";
     html += "<button class='btn btn-dark' id='" + data['randevouz_id'] + "_ra' onclick='pickRandevouz(" + data['randevouz_id'] + ")'> Pick this randevouz " + "</button>";
-
     html += "<div id='" + data['randevouz_id'] + "ra_div'></div>";
     html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
     return html;
@@ -187,7 +205,7 @@ function createTableFromJSONCancelRandevouzUser(data) {
 }
 
 function createTableFromJSONDeleteUser(data) {
-    if(data['username'] === 'admin'){
+    if (data['username'] === 'admin') {
         return;
     }
     var html = "<table class=" + "table table-dark" + "><tr><th>Category</th><th>Value</th></tr>";
@@ -198,7 +216,6 @@ function createTableFromJSONDeleteUser(data) {
     }
     html += "</table>";
     html += "<button class='btn btn-dark' id='" + data['user_id'] + "' onclick='deleteUser(" + data['user_id'] + ")'> Delete user " + data['username'] + "</button>";
-
     html += "<div id='" + data['user_id'] + "'></div>";
     html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
     return html;
@@ -213,7 +230,6 @@ function createTableFromJSONDeleteDoctor(data) {
     }
     html += "</table>";
     html += "<button class='btn btn-dark' id='" + data['doctor_id'] + "' onclick='deleteDoctor(" + data['doctor_id'] + ")'> Delete doctor " + data['lastname'] + "</button>";
-
     html += "<div id='" + data['doctor_id'] + "'></div>";
     html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
     return html;
@@ -221,7 +237,6 @@ function createTableFromJSONDeleteDoctor(data) {
 
 
 var compareList = "[";
-
 function createTableFromJSONCompareBloodTests(data) {
     // compareList = "[";
     var html = "<table class=" + "table table-dark" + "><tr><th>Category</th><th>Value</th></tr>";
@@ -234,7 +249,6 @@ function createTableFromJSONCompareBloodTests(data) {
     html += "<button style='margin-left:5px' class='btn btn-dark' id='" + data['bloodtest_id'] + "' onclick='addToCompareList(" + data['bloodtest_id'] + ")'> Add bloodtest to compare list." + "</button>";
     html += "<button style='margin-left:5px' class='btn btn-dark' id='" + data['bloodtest_id'] + "_rem' onclick='removeFromCompareList(" + data['bloodtest_id'] + ")'> Remove bloodtest from compare list." + "</button>";
     html += "<button style='margin-left:5px' class='btn btn-dark' id='" + data['bloodtest_id'] + "_treatment' onclick='showTreatments(" + data['bloodtest_id'] + ")'> Show treatments for this bloodtest." + "</button>";
-
     html += "<div id='" + data['bloodtest_id'] + "_div'></div>";
     html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
     return html;
@@ -277,9 +291,7 @@ function createTableFromJSONCancelRandevouz(data) {
         html += "<tr><td>" + category + "</td><td>" + value + "</td></tr>";
     }
     html += "</table>";
-
     html += "<button class='btn btn-dark' id='" + data['randevouz_id'] + "' onclick='cancelRandevouz(" + data['randevouz_id'] + ")'> Cancel Randevouz " + "</button>";
-
     html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
     return html;
 }
@@ -292,9 +304,7 @@ function createTableFromJSONUpdateRandevouz(data) {
         html += "<tr><td>" + category + "</td><td>" + value + "</td></tr>";
     }
     html += "</table>";
-
     html += "<button class='btn btn-dark' id='" + data['randevouz_id'] + "' onclick='showUpdateRandevouzForm(this.id)'> Update Randevouz " + "</button>";
-
     html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
     return html;
 }
@@ -307,22 +317,18 @@ function createTableFromJSONGiveTreatment(data) {
         html += "<tr><td>" + category + "</td><td>" + value + "</td></tr>";
     }
     html += "</table>";
-
     html += "<button class='btn btn-dark' id='" + data['randevouz_id'] + "' onclick='showTreatmentForm()'> Give Treatment " + "</button>";
-
     html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
     return html;
 }
 
 function compareFunctions() {
     $('#ajax_form').html("<h1>Please select how you want to compare your bloodtests</h1><br>");
-
     var html = "<button style='margin-left:5px' class='btn btn-dark' id='table_btn' onclick='getCompareList()'>Table</button>";
     html += "<button style='margin-left:5px' class='btn btn-dark' id='charts_btn' onclick='getCharts()'>Charts</button>";
     $("#ajax_form").show();
     $("#ajax_update").hide();
     $("#ajax_form").append(html);
-
 }
 
 
@@ -334,20 +340,15 @@ function getCharts() {
         JSONCompareList = JSON.parse(JSONCompareList);
         console.log(JSONCompareList);
         count = JSONCompareList.length;
-
         $('#ajax_form').html("<h1>Please select how you want to compare your bloodtests</h1><br>");
-
         var html = "<button style='margin-left:5px' class='btn btn-dark' id='table_btn' onclick='getCompareList()'>Table</button>";
         html += "<button style='margin-left:5px' class='btn btn-dark' id='charts_btn' onclick='getCharts()'>Charts</button>";
         $("#ajax_form").append(html);
-
-
         $('#ajax_form').append("<h1>Charts</h1>");
         $("#ajax_form").show();
         $("#ajax_update").hide();
         $('#table_btn').attr('disabled', false);
         $('#charts_btn').attr('disabled', true);
-
         for (var i = 0; i < count; i++) {
             $("#ajax_form").append("<div id='piechart" + i + "'</div>");
             drawChart(i, JSONCompareList);
@@ -365,7 +366,6 @@ function drawChart(i, JSONCompareList) {
         ["Blood Sugar", JSONCompareList[i]['blood_sugar']],
         ["Iron", JSONCompareList[i]['iron']],
     ]);
-
     var options = {
         title: "BloodTest " + (i + 1) + " - TestDate: " + JSONCompareList[i]['test_date'] + " - Medical Center: " + JSONCompareList[i]['medical_center'] + " - AMKA: " + JSONCompareList[i]['amka'],
         //colors: ['#9d0000', '#CCCC00', '#0000FF'],
@@ -374,26 +374,21 @@ function drawChart(i, JSONCompareList) {
         height: $(window).height() * 0.25,
         pieSliceText: 'value'
     };
-
     var chart = new google.visualization.PieChart(document.getElementById('piechart' + i));
-
     chart.draw(data, options);
 }
 
 
 function addToCompareList(id) {
     var xhr = new XMLHttpRequest();
-
     xhr.onload = function () {
         console.log(xhr.responseText);
         const responseData = JSON.parse(xhr.responseText);
-
         if (xhr.readyState === 4 && xhr.status === 200) {
 
             if (compareList.includes("\"bloodtest_id\":" + responseData['bloodtest_id'])) {
                 document.getElementById(responseData['bloodtest_id']).innerHTML = "BloodTest already in compare list";
                 document.getElementById(responseData['bloodtest_id']).disabled = "true";
-
             } else {
                 if (compareList[compareList.length - 1] === "]") {
                     compareList = compareList.slice(0, -1);
@@ -404,19 +399,16 @@ function addToCompareList(id) {
                 compareList += xhr.responseText + ",";
                 //console.log(JSON.parse(compareList));
                 document.getElementById(responseData['bloodtest_id']).innerHTML = "Succesfully added";
-
             }
             console.log(compareList);
         } else {
             document.getElementById(responseData['bloodtest_id']).innerHTML = "There was an error adding to compare list";
         }
     };
-
     let text = {};
     text["id"] = id;
     var JSONdata = JSON.stringify(text);
     console.log(JSONdata);
-
     xhr.open('POST', 'getBloodTest');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send(JSONdata);
@@ -437,11 +429,9 @@ function removeFromCompareList(id) {
                 JSONCompareList = JSONCompareList.filter(function (el) {
                     return el != null;
                 });
-
                 compareList = JSON.stringify(JSONCompareList);
                 console.log(compareList);
                 document.getElementById(id + "_rem").innerHTML = "Succesfully deleted";
-
                 break;
             }
         }
@@ -458,20 +448,16 @@ function removeFromCompareList(id) {
 var doc_lat1 = [];
 var doc_lon1 = [];
 var doctors;
-
 function findDoctorsSorted() {
     $('#ajax_form').html("<h1>Find doctors sorted by distance, by time of arrival by car or by price.</h1><br>");
-
     var html = "<button style='margin-left:5px' class='btn btn-dark' id='distance' onclick='getDoctorsByDistance()'>By distance</button>";
     html += "<button style='margin-left:5px' class='btn btn-dark' id='time' onclick='getDoctorsByTime()'>Time of arrival by car</button>";
     html += "<button style='margin-left:5px' class='btn btn-dark' id='price' onclick='getDoctorsByPrice()'>By price</button>";
     $("#ajax_form").show();
     $("#ajax_update").hide();
     $("#ajax_form").append(html);
-
     doc_lat1 = [];
     doc_lon1 = [];
-
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
@@ -497,7 +483,6 @@ function findDoctorsSorted() {
             }
         }
     };
-
     xhr.open('GET', 'getDoctors');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send();
@@ -505,23 +490,18 @@ function findDoctorsSorted() {
 
 function getDoctorsByPrice() {
     var xhr = new XMLHttpRequest();
-
-
     $('#ajax_form').html("<h1>Find doctors sorted by distance, by time of arrival by car or by price.</h1><br>");
-
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             const responseData = JSON.parse(xhr.responseText);
             var doctors = responseData;
             console.log(doctors);
-
             var html = "<button style='margin-left:5px' class='btn btn-dark' id='distance' onclick='getDoctorsByDistance()'>By distance</button>";
             html += "<button style='margin-left:5px' class='btn btn-dark' id='time' onclick='getDoctorsByTime()'>Time of arrival by car</button>";
             html += "<button style='margin-left:5px' class='btn btn-dark' id='price' onclick='getDoctorsByPrice()'>By price</button>";
             $("#ajax_form").show();
             $("#ajax_update").hide();
             $("#ajax_form").append(html);
-
             for (var i = 0; i < doctors.length; i++) {
                 var json = {};
                 for (x in doctors[i]) {
@@ -537,7 +517,6 @@ function getDoctorsByPrice() {
             }
         }
     };
-
     xhr.open('GET', 'getDoctorsByPrice');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send();
@@ -546,10 +525,8 @@ function getDoctorsByPrice() {
 
 function getCovidData() {
     const data = null;
-
     const xhr = new XMLHttpRequest();
     xhr.withCredentials = true;
-
     xhr.addEventListener("readystatechange", function () {
         if (this.readyState === this.DONE) {
             var json = JSON.parse(xhr.responseText);
@@ -562,29 +539,23 @@ function getCovidData() {
             var lastUpdateTime = new Date(json[0]['lastUpdate']).toLocaleTimeString();
             var lastChange = lastChangeDate + " " + lastChangeTime;
             var lastUpdate = lastUpdateDate + " " + lastUpdateTime;
-
             json[0]['lastUpdate'] = lastUpdate;
             json[0]['lastChange'] = lastChange;
-            
             $('#ajax_form').html("<h1>COVID-19 Statistics Greece</h1>" + createTableFromJSON(json[0]));
             $('#ajax_form').show();
         }
     });
-
     xhr.open("GET", "https://covid-19-data.p.rapidapi.com/country/code?code=gr&format=json");
     xhr.setRequestHeader("x-rapidapi-host", "covid-19-data.p.rapidapi.com");
     xhr.setRequestHeader("x-rapidapi-key", "f02e0addd4msh104747e67169815p1bca4fjsn394646e1a455");
-
     xhr.send(data);
 }
 
 function getDoctorsByDistance() {
 
     const data = null;
-
     const xhr = new XMLHttpRequest();
     xhr.withCredentials = true;
-
     xhr.addEventListener("readystatechange", function () {
         if (this.readyState === this.DONE) {
             console.log(xhr.responseText);
@@ -595,7 +566,6 @@ function getDoctorsByDistance() {
 
             console.log(doctors);
             var doc_id1_dis = [];
-
             for (let doctor in doctors) {
                 for (let x in doctors[doctor]) {
                     if (x == 'doctor_id') {
@@ -606,15 +576,11 @@ function getDoctorsByDistance() {
 
             console.log(arr);
             console.log(doc_id1_dis);
-
-
             $('#ajax_form').html("<h1>Find doctors sorted by distance, by time of arrival by car or by price.</h1><br>");
-
             var html = "<button style='margin-left:5px' class='btn btn-dark' id='distance' onclick='getDoctorsByDistance()' disabled>By distance</button>";
             html += "<button style='margin-left:5px' class='btn btn-dark' id='time' onclick='getDoctorsByTime()'>Time of arrival by car</button>";
             html += "<button style='margin-left:5px' class='btn btn-dark' id='price' onclick='getDoctorsByPrice()'>By price</button>";
             $("#ajax_form").append(html);
-
             for (var i = 0; i < arr.length; i++) {
                 for (var j = 0; j < (arr.length - i - 1); j++) {
                     if (arr[j] > arr[j + 1]) {
@@ -649,31 +615,24 @@ function getDoctorsByDistance() {
             console.log(arr);
             //console.log(doc_id1_temp);
             console.log(doc_id1_dis);
-
-
         }
     });
-
     var destinations = "";
     for (i in doc_lat1) {
         destinations += doc_lat1[i] + "," + doc_lon1[i] + ";";
     }
     destinations = destinations.substring(0, destinations.length - 1);
     console.log(destinations);
-
     xhr.open("GET", "https://trueway-matrix.p.rapidapi.com/CalculateDrivingMatrix?origins=" + user_lat + "%2C" + user_lon + "&destinations=" + destinations);
     xhr.setRequestHeader("x-rapidapi-host", "trueway-matrix.p.rapidapi.com");
     xhr.setRequestHeader("x-rapidapi-key", "f02e0addd4msh104747e67169815p1bca4fjsn394646e1a455");
-
     xhr.send(data);
 }
 
 function getDoctorsByTime() {
     const data = null;
-
     const xhr = new XMLHttpRequest();
     xhr.withCredentials = true;
-
     xhr.addEventListener("readystatechange", function () {
         if (this.readyState === this.DONE) {
             console.log(xhr.responseText);
@@ -683,7 +642,6 @@ function getDoctorsByTime() {
             //doc_id1_time = doc_id1;
 
             var doc_id1_time = [];
-
             for (let doctor in doctors) {
                 for (let x in doctors[doctor]) {
                     if (x == 'doctor_id') {
@@ -694,14 +652,11 @@ function getDoctorsByTime() {
 
             console.log(arr);
             console.log(doc_id1_time);
-
             $('#ajax_form').html("<h1>Find doctors sorted by distance, by time of arrival by car or by price.</h1><br>");
-
             var html = "<button style='margin-left:5px' class='btn btn-dark' id='distance' onclick='getDoctorsByDistance()'>By distance</button>";
             html += "<button style='margin-left:5px' class='btn btn-dark' id='time' onclick='getDoctorsByTime()' disabled>Time of arrival by car</button>";
             html += "<button style='margin-left:5px' class='btn btn-dark' id='price' onclick='getDoctorsByPrice()'>By price</button>";
             $("#ajax_form").append(html);
-
             for (var i = 0; i < arr.length; i++) {
                 for (var j = 0; j < (arr.length - i - 1); j++) {
                     if (arr[j] > arr[j + 1]) {
@@ -735,29 +690,23 @@ function getDoctorsByTime() {
             console.log(doctors);
             console.log(arr);
             console.log(doc_id1_time);
-
-
         }
     });
-
     var destinations = "";
     for (i in doc_lat1) {
         destinations += doc_lat1[i] + "," + doc_lon1[i] + ";";
     }
     destinations = destinations.substring(0, destinations.length - 1);
     console.log(destinations);
-
     xhr.open("GET", "https://trueway-matrix.p.rapidapi.com/CalculateDrivingMatrix?origins=" + user_lat + "%2C" + user_lon + "&destinations=" + destinations);
     xhr.setRequestHeader("x-rapidapi-host", "trueway-matrix.p.rapidapi.com");
     xhr.setRequestHeader("x-rapidapi-key", "f02e0addd4msh104747e67169815p1bca4fjsn394646e1a455");
-
     xhr.send(data);
 }
 
 
 function seeAvailableRandevouz(id) {
     var xhr = new XMLHttpRequest();
-
     xhr.onload = function () {
         console.log(xhr.responseText);
         const responseData = JSON.parse(xhr.responseText);
@@ -778,13 +727,11 @@ function seeAvailableRandevouz(id) {
             document.getElementById(id + "_div").innerHTML = "<br><h3>There was an error finding the randevouz for this doctor " + "</h3>";
         }
     };
-
     console.log(id);
     let text = {};
     text["id"] = id;
     var JSONdata = JSON.stringify(text);
     console.log(JSONdata);
-
     xhr.open('POST', 'seeRandevouzUser');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send(JSONdata);
@@ -796,32 +743,26 @@ function pickRandevouz(id) {
     var html = "<br><label for='randevouztext'>More info about you.</label><br><textarea id='randevouztext' class='form-control' rows='4'></textarea>"
     html += "<button class='btn btn-dark' id='" + id + "_pickRa' onclick='lockRandevouz(" + id + ")'> Confirm this randevouz " + "</button>";
     html += "<div id='" + id + "_divRa'></div>";
-
     document.getElementById(id + "ra_div").innerHTML = html;
 }
 
 function lockRandevouz(id) {
     var xhr = new XMLHttpRequest();
-
-
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             document.getElementById(id + "_divRa").innerHTML = "<br><h3>Succesfully selected randevouz" + "</h3><br>";
             document.getElementById(id + "_pickRa").disabled = "true";
             document.getElementById("randevouztext").readOnly = true;
-
         } else {
             document.getElementById(id + "_divRa").innerHTML = "<br><h3>There was an error selecting this randevouz" + "</h3>";
         }
     };
-
     console.log(id);
     let text = {};
     text["id"] = id;
     text["info"] = document.getElementById("randevouztext").value;
     var JSONdata = JSON.stringify(text);
     console.log(JSONdata);
-
     xhr.open('POST', 'selectRandevouz');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send(JSONdata);
@@ -829,7 +770,6 @@ function lockRandevouz(id) {
 
 function getMyMessages() {
     $('#ajax_form').html("<h1>My Messages</h1><br>");
-
     var html = "<button style='margin-left:5px' class='btn btn-dark' id='inbox_mes' onclick='getInboxMessages()'>Inbox</button>";
     html += "<button style='margin-left:5px' class='btn btn-dark' id='sent_mes' onclick='getSentMessages()'>Sent</button>";
     $("#ajax_form").show();
@@ -839,16 +779,13 @@ function getMyMessages() {
 
 function getSentMessages() {
     const xhr = new XMLHttpRequest();
-
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
 
             $('#ajax_form').html("<h1>My Messages</h1><br>");
-
             var html = "<button style='margin-left:5px' class='btn btn-dark' id='inbox_mes' onclick='getInboxMessages()'>Inbox</button>";
             html += "<button style='margin-left:5px' class='btn btn-dark' id='sent_mes' onclick='getSentMessages()'>Sent</button>";
             $("#ajax_form").append(html);
-
             const obj = JSON.parse(xhr.responseText);
             console.log(obj);
             $("#ajax_form").show();
@@ -865,12 +802,10 @@ function getSentMessages() {
                     + JSON.stringify(xhr.responseText));
         }
     };
-
     let text = {};
     text["type"] = "sent";
     var JSONdata = JSON.stringify(text);
     console.log(JSONdata);
-
     xhr.open("POST", "getMessagesUser");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
@@ -880,16 +815,13 @@ function getSentMessages() {
 
 function getInboxMessages() {
     const xhr = new XMLHttpRequest();
-
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
 
             $('#ajax_form').html("<h1>My Messages</h1><br>");
-
             var html = "<button style='margin-left:5px' class='btn btn-dark' id='inbox_mes' onclick='getInboxMessages()'>Inbox</button>";
             html += "<button style='margin-left:5px' class='btn btn-dark' id='sent_mes' onclick='getSentMessages()'>Sent</button>";
             $("#ajax_form").append(html);
-
             const obj = JSON.parse(xhr.responseText);
             console.log(obj);
             $("#ajax_form").show();
@@ -906,12 +838,10 @@ function getInboxMessages() {
                     + JSON.stringify(xhr.responseText));
         }
     };
-
     let text = {};
     text["type"] = "inbox";
     var JSONdata = JSON.stringify(text);
     console.log(JSONdata);
-
     xhr.open("POST", "getMessagesUser");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
@@ -925,32 +855,26 @@ function composeMessageToDoctor(id) {
     var html = "<br><label for='messagetext'>Message</label><br><textarea id='messagetext' class='form-control' rows='4'></textarea>"
     html += "<button class='btn btn-dark' id='" + id + "_pickmes' onclick='sendMessageToDoctor(" + id + ")'> Send message to Doctor " + "</button>";
     html += "<div id='" + id + "_divmes'></div>";
-
     document.getElementById(id + "mes_div").innerHTML = html;
 }
 
 function sendMessageToDoctor(id) {
     var xhr = new XMLHttpRequest();
-
-
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             document.getElementById(id + "_divmes").innerHTML = "<br><h3>Succesfully sent." + "</h3><br>";
             document.getElementById(id + "_pickmes").disabled = "true";
             document.getElementById("messagetext").readOnly = true;
-
         } else {
             document.getElementById(id + "_divmes").innerHTML = "<br><h3>There was an error sending your message." + "</h3>";
         }
     };
-
     console.log(id);
     let text = {};
     text["id"] = id;
     text["message"] = document.getElementById("messagetext").value;
     var JSONdata = JSON.stringify(text);
     console.log(JSONdata);
-
     xhr.open('POST', 'sendMessageToDoctor');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send(JSONdata);
@@ -958,7 +882,6 @@ function sendMessageToDoctor(id) {
 
 function getMyRandevouz() {
     const xhr = new XMLHttpRequest();
-
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
 
@@ -978,7 +901,6 @@ function getMyRandevouz() {
                     + JSON.stringify(xhr.responseText));
         }
     };
-
     xhr.open("GET", "seeRandevouzUser");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
@@ -987,7 +909,6 @@ function getMyRandevouz() {
 
 function cancelRandevouzUser(id) {
     const xhr = new XMLHttpRequest();
-
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             document.getElementById(id + "ra_div").innerHTML = "<h3>Succesfully cancelled your randevouz</h3>";
@@ -996,12 +917,10 @@ function cancelRandevouzUser(id) {
             document.getElementById(id + "ra_div").innerHTML = "<h3>There was an error cancelling your randevouz</h3>";
         }
     };
-
     let text = {};
     text["id"] = id;
     var JSONdata = JSON.stringify(text);
     console.log(JSONdata);
-
     xhr.open("POST", "cancelRandevouz");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
@@ -1010,11 +929,9 @@ function cancelRandevouzUser(id) {
 
 function showTreatments(id) {
     var xhr = new XMLHttpRequest();
-
     xhr.onload = function () {
         console.log(xhr.responseText);
         const responseData = JSON.parse(xhr.responseText);
-
         if (xhr.readyState === 4 && xhr.status === 200) {
             count = responseData.length;
             for (treatment in responseData) {
@@ -1027,12 +944,10 @@ function showTreatments(id) {
             document.getElementById(id + "_div").innerHTML = "<br><h3>There was an error finding the treatments for bloodtest_" + id + "</h3>";
         }
     };
-
     let text = {};
     text["id"] = id;
     var JSONdata = JSON.stringify(text);
     console.log(JSONdata);
-
     xhr.open('POST', 'getTreatment');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send(JSONdata);
@@ -1057,12 +972,10 @@ function seeRandevouz() {
     }
 
     var jsonData = JSON.stringify(data);
-
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             const responseData = JSON.parse(xhr.responseText);
-
             for (id in responseData) {
                 for (val in responseData[id]) {
                     console.log(responseData[id][val]);
@@ -1090,7 +1003,6 @@ function seeRandevouz() {
             }
         } else if (xhr.status !== 200) {
             alert(xhr.responseText);
-
         }
     };
     console.log(jsonData);
@@ -1111,12 +1023,10 @@ function seeBloodtestsDoctor() {
     }
 
     var jsonData = JSON.stringify(data);
-
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             const responseData = JSON.parse(xhr.responseText);
-
             for (id in responseData) {
                 for (val in responseData[id]) {
                     console.log(responseData[id][val]);
@@ -1148,7 +1058,6 @@ function seeBloodtestsDoctor() {
             }
         } else if (xhr.status !== 200) {
             alert(xhr.responseText);
-
         }
     };
     console.log(jsonData);
@@ -1171,11 +1080,9 @@ function removeFromCompareList(id) {
                 JSONCompareList = JSONCompareList.filter(function (el) {
                     return el != null;
                 });
-
                 compareList = JSON.stringify(JSONCompareList);
                 console.log(compareList);
                 document.getElementById(id + "_rem").innerHTML = "Succesfully deleted";
-
                 break;
             }
         }
@@ -1196,21 +1103,16 @@ function getCompareList() {
         JSONCompareList = JSON.parse(JSONCompareList);
         console.log(JSONCompareList);
         count = JSONCompareList.length;
-
         $('#ajax_form').html("<h1>Please select how you want to compare your bloodtests</h1><br>");
-
         var html = "<button style='margin-left:5px' class='btn btn-dark' id='table_btn' onclick='getCompareList()'>Table</button>";
         html += "<button style='margin-left:5px' class='btn btn-dark' id='charts_btn' onclick='getCharts()'>Charts</button>";
         $("#ajax_form").append(html);
-
         $('#ajax_form').append("<h1>Compare List</h1>");
         $("#ajax_form").show();
         $("#ajax_update").hide();
-
         //for (id in JSONCompareList) {
         //delete obj[id]["bloodtest_id"];
         $('#ajax_form').append(createTableFromJSONCompareList(JSONCompareList, count));
-
         //}
 
     } else {
@@ -1218,17 +1120,14 @@ function getCompareList() {
     }
     $('#table_btn').attr('disabled', true);
     $('#charts_btn').attr('disabled', false);
-
 }
 
 
 function deleteDoctor(id) {
     var xhr = new XMLHttpRequest();
-
     xhr.onload = function () {
         console.log(xhr.responseText);
         const responseData = JSON.parse(xhr.responseText);
-
         if (xhr.readyState === 4 && xhr.status === 200) {
             document.getElementById(responseData['doctor_id']).disabled = "true";
             document.getElementById(responseData['doctor_id']).innerHTML = "Doctor " + responseData['lastname'] + " successfully deleted";
@@ -1236,12 +1135,10 @@ function deleteDoctor(id) {
             document.getElementById(responseData['doctor_id']).innerHTML = "There was an error deleting doctor " + responseData['lastname'];
         }
     };
-
     let text = {};
     text["id"] = id;
     var JSONdata = JSON.stringify(text);
     console.log(JSONdata);
-
     xhr.open('POST', 'DeleteDoctors');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send(JSONdata);
@@ -1250,11 +1147,9 @@ function deleteDoctor(id) {
 
 function deleteUser(id) {
     var xhr = new XMLHttpRequest();
-
     xhr.onload = function () {
         console.log(xhr.responseText);
         const responseData = JSON.parse(xhr.responseText);
-
         if (xhr.readyState === 4 && xhr.status === 200) {
             document.getElementById(responseData['user_id']).disabled = "true";
             document.getElementById(responseData['user_id']).innerHTML = "User " + responseData['username'] + " successfully deleted";
@@ -1262,12 +1157,10 @@ function deleteUser(id) {
             document.getElementById(responseData['user_id']).innerHTML = "There was an error deleting user " + responseData['username'];
         }
     };
-
     let text = {};
     text["id"] = id;
     var JSONdata = JSON.stringify(text);
     console.log(JSONdata);
-
     xhr.open('POST', 'DeleteUsers');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send(JSONdata);
@@ -1276,11 +1169,9 @@ function deleteUser(id) {
 
 function certifyDoctor(id) {
     var xhr = new XMLHttpRequest();
-
     xhr.onload = function () {
         console.log(xhr.responseText);
         const responseData = JSON.parse(xhr.responseText);
-
         if (xhr.readyState === 4 && xhr.status === 200) {
             document.getElementById(responseData['doctor_id']).disabled = "true";
             document.getElementById(responseData['doctor_id']).innerHTML = "Doctor " + responseData['lastname'] + " successfully certified";
@@ -1288,12 +1179,10 @@ function certifyDoctor(id) {
             document.getElementById(responseData['doctor_id']).innerHTML = "There was an error certifying doctor " + responseData['lastname'];
         }
     };
-
     let text = {};
     text["id"] = id;
     var JSONdata = JSON.stringify(text);
     console.log(JSONdata);
-
     xhr.open('POST', 'CertifyDoctors');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send(JSONdata);
@@ -1302,15 +1191,12 @@ function certifyDoctor(id) {
 
 var data;
 var age;
-
 function getDataRequest() {
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             const responseData = JSON.parse(xhr.responseText);
-
             data = responseData;
-
             age = responseData["birthdate"].toString().substr(0, 4);
             age = 2021 - age;
             delete responseData["user_id"];
@@ -1321,13 +1207,11 @@ function getDataRequest() {
             document.getElementById("bmi").disabled = false;
             document.getElementById("ideal_weight").disabled = false;
             document.getElementById("change").disabled = false;
-
             // $("#myForm").hide();
         } else if (xhr.status !== 200) {
             alert('Request failed. Returned status of ' + xhr.status);
         }
     };
-
     xhr.open('GET', 'Login');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send();
@@ -1345,19 +1229,16 @@ function getDoctorDataRequest() {
         if (xhr.readyState === 4 && xhr.status === 200) {
             const responseData = JSON.parse(xhr.responseText);
             data = responseData;
-
             delete responseData["user_id"];
             $('#ajax_form').html("<h1>Your Data</h1>");
             $('#ajax_form').append(createTableFromJSON(responseData));
             $("#ajax_form").show();
             $("#ajax_update").hide();
             document.getElementById("change").disabled = false;
-
         } else if (xhr.status !== 200) {
             alert('Request failed. Returned status of ' + xhr.status);
         }
     };
-
     xhr.open('GET', 'Login');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send();
@@ -1390,7 +1271,6 @@ function addRandevouz() {
 
     var jsonData = JSON.stringify(data);
     console.log(jsonData);
-
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
@@ -1415,12 +1295,10 @@ function cancelRandevouz(id) {
 
         }
     };
-
     let text = {};
     text["id"] = id;
     var JSONdata = JSON.stringify(text);
     console.log(JSONdata);
-
     xhr.open("POST", "cancelRandevouz");
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send(JSONdata);
@@ -1440,7 +1318,6 @@ function updateRandevouz() {
 
     var jsonData = JSON.stringify(data);
     console.log(jsonData);
-
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
@@ -1466,7 +1343,6 @@ function getAllRandevouzCancel() {
             const responseData = JSON.parse(xhr.responseText);
             $('#ajax_update').hide();
             $('#ajax_form').html("<h1>Randevouz</h1>");
-
             for (id in responseData) {
                 for (val in responseData[id]) {
                     console.log(responseData[id][val]);
@@ -1489,7 +1365,6 @@ function getAllRandevouzCancel() {
             alert('Request failed. Returned status of ' + xhr.status);
         }
     };
-
     xhr.open('GET', 'getAllRandevouz');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send();
@@ -1503,7 +1378,6 @@ function getAllRandevouzUpdate() {
             console.log(responseData[0].randevouz_id);
             $('#ajax_update').hide();
             $('#ajax_form').html("<h1>Randevouz</h1>");
-
             for (id in responseData) {
                 for (val in responseData[id]) {
                     console.log(responseData[id][val]);
@@ -1526,7 +1400,6 @@ function getAllRandevouzUpdate() {
             alert('Request failed. Returned status of ' + xhr.status);
         }
     };
-
     xhr.open('GET', 'getAllRandevouz');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send();
@@ -1539,7 +1412,6 @@ function showGiveTreatment() {
             const responseData = JSON.parse(xhr.responseText);
             $('#ajax_update').hide();
             $('#ajax_form').html("<h1>Done Randevouz</h1>");
-
             for (id in responseData) {
                 for (val in responseData[id]) {
                     console.log(responseData[id][val]);
@@ -1562,7 +1434,6 @@ function showGiveTreatment() {
             alert('Request failed. Returned status of ' + xhr.status);
         }
     };
-
     xhr.open('GET', 'getAllRandevouzDone');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send();
@@ -1587,15 +1458,12 @@ function addTreatment() {
 
     var jsonData = JSON.stringify(data);
     console.log(jsonData);
-
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             $("#ajax_form").html("Treatment has been added");
-
         } else if (xhr.status !== 200) {
             alert(xhr.responseText);
-
         }
     };
     xhr.open('POST', 'addTreatment');
@@ -1607,7 +1475,6 @@ function showUpdateForm() {
     $("#ajax_form").hide();
     $("#ajax_update").show();
     console.log(data["firstname"]);
-
     document.getElementById("firstname").value = data["firstname"];
     document.getElementById("lastname").value = data["lastname"];
     document.getElementById("username").value = data["username"];
@@ -1622,7 +1489,6 @@ function showUpdateForm() {
     document.getElementById("amka").value = data["amka"];
     document.getElementById("telephone").value = data["telephone"];
     document.getElementById("bloodtype").value = data["bloodtype"];
-
 }
 
 function showBloodTestForm() {
@@ -1644,17 +1510,14 @@ function addBloodTest() {
 
     var jsonData = JSON.stringify(data);
     console.log(jsonData);
-
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             document.getElementById('msg').innerHTML = JSON.stringify(xhr.responseText);
-
         } else if (xhr.status !== 200) {
             document.getElementById('msg')
                     .innerHTML = 'Request failed. Returned status of ' + xhr.status + "<br>" +
                     JSON.stringify(xhr.responseText);
-
         }
     };
     xhr.open('POST', 'addBloodTest');
@@ -1693,7 +1556,6 @@ function getBloodTestAMKA() {
                     + JSON.stringify(xhr.responseText));
         }
     };
-
     xhr.open("GET", "addBloodTest");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
@@ -1704,7 +1566,6 @@ function getBloodTestAMKA() {
 
 function getTreatments() {
     const xhr = new XMLHttpRequest();
-
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
 
@@ -1724,7 +1585,6 @@ function getTreatments() {
                     + JSON.stringify(xhr.responseText));
         }
     };
-
     xhr.open("GET", "getTreatment");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
@@ -1734,13 +1594,10 @@ function getTreatments() {
 
 function getBmi() {
     const data1 = null;
-
     // getDataFromUser();
     console.log(data["weight"] + " " + data["height"] + " " + age);
-
     const xhr1 = new XMLHttpRequest();
     xhr1.withCredentials = true;
-
     xhr1.addEventListener("readystatechange", function () {
         if (this.readyState === this.DONE) {
             const responseData = JSON.parse(xhr1.responseText);
@@ -1751,20 +1608,16 @@ function getBmi() {
             $("#ajax_update").hide();
         }
     });
-
     xhr1.open("GET", "https://fitness-calculator.p.rapidapi.com/bmi?age=" + age + "&weight=" + data["weight"] + "&height=" + data["height"]);
     xhr1.setRequestHeader("x-rapidapi-host", "fitness-calculator.p.rapidapi.com");
     xhr1.setRequestHeader("x-rapidapi-key", "f02e0addd4msh104747e67169815p1bca4fjsn394646e1a455");
-
     xhr1.send(data1);
 }
 
 function getIdealWeight() {
     const data1 = null;
-
     const xhr = new XMLHttpRequest();
     xhr.withCredentials = true;
-
     xhr.addEventListener("readystatechange", function () {
         if (this.readyState === this.DONE) {
             const responseData = JSON.parse(xhr.responseText);
@@ -1774,11 +1627,9 @@ function getIdealWeight() {
             $("#ajax_update").hide();
         }
     });
-
     xhr.open("GET", "https://fitness-calculator.p.rapidapi.com/idealweight?gender=" + data["gender"].toString().toLowerCase() + "&height=" + data["height"]);
     xhr.setRequestHeader("x-rapidapi-host", "fitness-calculator.p.rapidapi.com");
     xhr.setRequestHeader("x-rapidapi-key", "f02e0addd4msh104747e67169815p1bca4fjsn394646e1a455");
-
     xhr.send(data1);
 }
 
@@ -1803,7 +1654,6 @@ function getUncertifiedDoctors() {
             alert('Request failed. Returned status of ' + xhr.status);
         }
     };
-
     xhr.open('GET', 'getUncertifiedDoctors');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send();
@@ -1830,7 +1680,6 @@ function getAllUsersAdmin() {
             alert('Request failed. Returned status of ' + xhr.status);
         }
     };
-
     xhr.open('GET', 'getAllUsers');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send();
@@ -1856,7 +1705,6 @@ function getAllDoctorsAdmin() {
             alert('Request failed. Returned status of ' + xhr.status);
         }
     };
-
     xhr.open('GET', 'getAllDoctors');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send();
@@ -1886,7 +1734,6 @@ function getCertifiedDoctors() {
             alert('Request failed. Returned status of ' + xhr.status);
         }
     };
-
     xhr.open('GET', 'getDoctors');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send();
@@ -1895,7 +1742,6 @@ function getCertifiedDoctors() {
 var doc_lat = [];
 var doc_lon = [];
 var doc_names = [];
-
 function getAllDoctors() {
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
@@ -1903,7 +1749,6 @@ function getAllDoctors() {
             const responseData = JSON.parse(xhr.responseText);
             $('#ajax_update').hide();
             $('#ajax_form').html("<h1>Doctors</h1> <button id='show_map' class='btn btn-dark' onclick='showMapFindDoctors()'>Show on map</button><br><div id='Map_doc' style='display: none; height:600px; width:100%; border:1px solid'></div>");
-
             for (let doctor in responseData) {
                 var json = {};
                 for (let x in responseData[doctor]) {
@@ -1932,7 +1777,6 @@ function getAllDoctors() {
             alert('Request failed. Returned status of ' + xhr.status);
         }
     };
-
     xhr.open('GET', 'getAllDoctors');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send();
@@ -1971,59 +1815,43 @@ function getAllDoctors() {
 
 function showMapFindDoctors() {
     var position;
-
     document.getElementById("Map_doc").style.display = "block";
     document.getElementById("show_map").disabled = true;
-
     map = new OpenLayers.Map("Map_doc");
     mapnik = new OpenLayers.Layer.OSM();
     map.addLayer(mapnik);
-
     markers = new OpenLayers.Layer.Markers("Markers");
     map.addLayer(markers);
-
     for (var i = 0; i < doc_lat.length; i++) {
         position = setPosition(doc_lat[i], doc_lon[i]);
-
         mar = new OpenLayers.Marker(position);
         markers.addMarker(mar);
-
         mar.events.register('mousedown', mar, function (evt) {
             handler(position, doc_names[i]);
         });
-
     }
 
-    //Orismos zoom
+//Orismos zoom
     const zoom = 11;
     map.setCenter(position, zoom);
 }
 
 function showMap() {
     var position;
-
     document.getElementById("Map").style.display = "block";
     document.getElementById("map").disabled = true;
-
-
     map = new OpenLayers.Map("Map");
     mapnik = new OpenLayers.Layer.OSM();
     map.addLayer(mapnik);
-
     markers = new OpenLayers.Layer.Markers("Markers");
     map.addLayer(markers);
-
     mapShown = 1;
-
     position = setPosition(lat, lon);
-
     mar = new OpenLayers.Marker(position);
     markers.addMarker(mar);
-
     mar.events.register('mousedown', mar, function (evt) {
         handler(position, document.getElementById("address").value);
     });
-
     //Orismos zoom
     const zoom = 11;
     map.setCenter(position, zoom);
@@ -2054,7 +1882,6 @@ function username_check() {
 
     var username = document.getElementById('username').value;
     var xhr = new XMLHttpRequest();
-
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             document.getElementById('username_exists').innerHTML = "";
@@ -2062,16 +1889,12 @@ function username_check() {
             document.getElementById('username_exists').innerHTML = "<h3>username '" + username + "' already exists!<br></h3>";
         }
     };
-
-
     var jsonData = {};
     jsonData['username'] = username;
     var lol = JSON.stringify(jsonData);
-
     xhr.open('POST', 'username_check');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send(lol);
-
 }
 
 
@@ -2079,7 +1902,6 @@ function email_check() {
 
     var email = document.getElementById('email').value;
     var xhr = new XMLHttpRequest();
-
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             document.getElementById('email_exists').innerHTML = "";
@@ -2087,12 +1909,10 @@ function email_check() {
             document.getElementById('email_exists').innerHTML = "<h3>email '" + email + "' already exists!<br></h3>";
         }
     };
-
     var jsonData = {};
     jsonData['email'] = email;
     var lol = JSON.stringify(jsonData);
     console.log(lol);
-
     xhr.open('POST', 'email_check');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send(lol);
@@ -2101,7 +1921,6 @@ function email_check() {
 function amka_check() {
     var amka = document.getElementById('amka').value;
     var xhr = new XMLHttpRequest();
-
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             document.getElementById('erroramka').innerHTML = "";
@@ -2109,12 +1928,10 @@ function amka_check() {
             document.getElementById('erroramka').innerHTML = "<h3>AMKA '" + amka + "' already exists!</h3>";
         }
     };
-
     var jsonData = {};
     jsonData['amka'] = amka;
     var lol = JSON.stringify(jsonData);
     console.log(lol);
-
     xhr.open('POST', 'amka_check');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send(lol);

@@ -42,7 +42,6 @@ public class EditMessageTable {
         return json;
     }
 
-   
     
     public Message databaseToMessage(int id) throws SQLException, ClassNotFoundException{
          Connection con = DB_Connection.getConnection();

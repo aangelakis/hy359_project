@@ -100,6 +100,10 @@
         <servlet-name>getDoctorsByPrice</servlet-name>
         <servlet-class>Servlets.getDoctorsByPrice</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>alertUser</servlet-name>
+        <servlet-class>Servlets.alertUser</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Register</servlet-name>
         <url-pattern>/Register</url-pattern>
@@ -199,6 +203,10 @@
     <servlet-mapping>
         <servlet-name>getDoctorsByPrice</servlet-name>
         <url-pattern>/getDoctorsByPrice</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>alertUser</servlet-name>
+        <url-pattern>/alertUser</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
