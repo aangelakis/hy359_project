@@ -548,7 +548,7 @@ function RegisterPOST() {
 
 
 function UpdateForm() {
-
+    console.log("UPDATEFORM");
     let myForm = document.getElementById('form2');
     let formData = new FormData(myForm);
     formData.append('lat', data["lat"]);

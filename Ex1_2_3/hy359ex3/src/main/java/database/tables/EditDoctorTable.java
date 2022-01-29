@@ -7,6 +7,7 @@ package database.tables;
 
 import mainClasses.Doctor;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import database.DB_Connection;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -45,6 +46,29 @@ public class EditDoctorTable {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
         String update = "UPDATE doctors SET height='" + height + "' WHERE username = '" + username + "'";
+        stmt.executeUpdate(update);
+        stmt.close();
+        con.close();
+    }
+
+    public void updateDoctorAll(JsonObject json) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        String update, query = null;
+
+        query = "firstname=" + json.get("firstname") + ", lastname=" + json.get("lastname")
+                + ", username=" + json.get("username") + ", email=" + json.get("email")
+                + ", password=" + json.get("password") + ", address=" + json.get("address")
+                + ", city=" + json.get("city") + ", country=" + json.get("country")
+                + ", birthdate=" + json.get("birthdate") + ", height=" + json.get("height")
+                + ", weight=" + json.get("weight") + ", gender=" + json.get("gender")
+                + ", amka=" + json.get("amka") + ", telephone=" + json.get("telephone")
+                + ", blooddonor=" + json.get("blooddonor") + ", bloodtype=" + json.get("bloodtype")
+                + ", lat=" + json.get("lat") + ", lon=" + json.get("lon")
+                + ", specialty=" + json.get("specialty") + ", doctor_info=" + json.get("doctor_info");
+        update = "UPDATE doctors SET " + query + " WHERE username = " + json.get("username");
+        System.out.println(update);
+
         stmt.executeUpdate(update);
         stmt.close();
         con.close();

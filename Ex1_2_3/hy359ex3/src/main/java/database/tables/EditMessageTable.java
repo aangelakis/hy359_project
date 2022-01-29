@@ -106,6 +106,50 @@ public class EditMessageTable {
         return null;
     }
 
+    public ArrayList<Message> databaseToInboxMessageDoctor(int doctor_id) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+
+        ArrayList<Message> messages = new ArrayList<Message>();
+        ResultSet rs;
+        try {
+            rs = stmt.executeQuery("SELECT * FROM message WHERE doctor_id= '" + doctor_id + "' AND sender = 'user'");
+            while (rs.next()) {
+                String json = DB_Connection.getResultsToJSON(rs);
+                Gson gson = new Gson();
+                Message mes = gson.fromJson(json, Message.class);
+                messages.add(mes);
+            }
+            return messages;
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public ArrayList<Message> databaseToSentMessageDoctor(int doctor_id) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+
+        ArrayList<Message> messages = new ArrayList<Message>();
+        ResultSet rs;
+        try {
+            rs = stmt.executeQuery("SELECT * FROM message WHERE doctor_id= '" + doctor_id + "' AND sender != 'user'");
+            while (rs.next()) {
+                String json = DB_Connection.getResultsToJSON(rs);
+                Gson gson = new Gson();
+                Message mes = gson.fromJson(json, Message.class);
+                messages.add(mes);
+            }
+            return messages;
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+        return null;
+    }
+
     public void createMessageTable() throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
