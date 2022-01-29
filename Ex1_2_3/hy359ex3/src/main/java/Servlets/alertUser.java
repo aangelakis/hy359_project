@@ -109,15 +109,7 @@ public class alertUser extends HttpServlet {
             EditDoctorTable edt = new EditDoctorTable();
             Doctor doc = null;
             long diff = time_now.until(time, ChronoUnit.HOURS);
-            /*int blooddonor = 0;
-                String sender = "system";
-                int doctor_id = 0;
-                String bloodtype = null;
-                String message = "Your randevouz is in " + difference + " hours";
-                String date = java.time.LocalDate.now().toString();
-                String time = java.time.LocalTime.now().toString();
-                String date_time = date + " " + time;
-             */
+
             try {
                 doc = edt.databaseToDoctorID(randevouz.get(i).getDoctor_id());
 
@@ -130,25 +122,10 @@ public class alertUser extends HttpServlet {
             JsonObject json_message = new JsonObject();
             json_message.addProperty("lastname", doc.getLastname());
             json_message.addProperty("diff", diff);
-            /*json_message.addProperty("doctor_id", doctor_id);
-            json_message.addProperty("message", message);
-            json_message.addProperty("user_id", user_id);
-            json_message.addProperty("sender", "user");
-            json_message.addProperty("date_time", date_time);
-            json_message.addProperty("blood_donation", blooddonor);
-            json_message.addProperty("bloodtype", bloodtype);
-            
-             */
+
             String json_message_string = json_message.toString();
             response.getWriter().write(json_message_string);
-            /*EditMessageTable emt = new EditMessageTable();
 
-            try {
-                emt.addMessageFromJSON(json_message_string);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(sendMessageToDoctor.class.getName()).log(Level.SEVERE, null, ex);
-            }
-             */
             response.setStatus(200);
 
         } else {

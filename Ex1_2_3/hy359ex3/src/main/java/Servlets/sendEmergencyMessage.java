@@ -11,14 +11,14 @@ import database.tables.EditMessageTable;
 import database.tables.EditSimpleUserTable;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,13 +29,13 @@ import mainClasses.SimpleUser;
 
 /**
  *
- * @author ΜΙΧΑΛΗΣ
+ * @author alex
  */
-@WebServlet(name = "sendMessagesToUser", urlPatterns = {"/sendMessagesToUser"})
-public class sendMessagesToUser extends HttpServlet {
+public class sendEmergencyMessage extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -45,18 +45,6 @@ public class sendMessagesToUser extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet sendMessagesToUser</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet sendMessagesToUser at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -71,7 +59,6 @@ public class sendMessagesToUser extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
     }
 
     /**
@@ -85,7 +72,6 @@ public class sendMessagesToUser extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         HttpSession session = request.getSession();
         String JSON_user = (String) session.getAttribute("loggedIn").toString();
         JSON_Converter jc = new JSON_Converter();
@@ -96,46 +82,53 @@ public class sendMessagesToUser extends HttpServlet {
         String json = jc.getJSONFromAjax(request.getReader());
         System.out.println(json);
         JsonObject jsonObject = new JsonParser().parse(json).getAsJsonObject();
-        String date = java.time.LocalDate.now().toString();
-        String time = java.time.LocalTime.now().withNano(0).toString();
 
-        int doctor_id = doc.getDoctor_id();
+        String bloodtype = jsonObject.get("bloodtype").getAsString();
         String message = jsonObject.get("message").getAsString();
-        int user_id = Integer.parseInt(jsonObject.get("id").getAsString());
 
         EditSimpleUserTable esut = new EditSimpleUserTable();
-        SimpleUser su = new SimpleUser();
+        ArrayList<SimpleUser> users = new ArrayList<SimpleUser>();
 
         try {
-            su = esut.databaseToSimpleUserId(user_id);
+            users = esut.databaseToSimpleUsersBloodtypes(bloodtype);
         } catch (SQLException ex) {
-            Logger.getLogger(sendMessagesToUser.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(sendEmergencyMessage.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(sendMessagesToUser.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(sendEmergencyMessage.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        String date_time = date + " " + time;
-        String bloodtype = su.getBloodtype();
-        int blood_donation = su.getBlooddonor();
-
-        JsonObject json_message = new JsonObject();
-        json_message.addProperty("doctor_id", doctor_id);
-        json_message.addProperty("message", message);
-        json_message.addProperty("user_id", user_id);
-        json_message.addProperty("sender", "doctor");
-        json_message.addProperty("date_time", date_time);
-        json_message.addProperty("blood_donation", blood_donation);
-        json_message.addProperty("bloodtype", bloodtype);
 
         EditMessageTable emt = new EditMessageTable();
-        String json_message_string = json_message.toString();
+        int doctor_id = doc.getDoctor_id();
+        int user_id;
+        String date = java.time.LocalDate.now().toString();
+        String time = java.time.LocalTime.now().withNano(0).toString();
+        String date_time = date + " " + time;
 
-        try {
-            emt.addMessageFromJSON(json_message_string);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(sendMessageToDoctor.class.getName()).log(Level.SEVERE, null, ex);
+        int ids[] = new int[users.size()];
+
+        for (int i = 0; i < users.size(); i++) {
+
+            JsonObject json_message = new JsonObject();
+            user_id = users.get(i).getUser_id();
+            ids[i] = user_id;
+            json_message.addProperty("doctor_id", doctor_id);
+            json_message.addProperty("message", message);
+            json_message.addProperty("user_id", user_id);
+            json_message.addProperty("sender", "doctor");
+            json_message.addProperty("date_time", date_time);
+            json_message.addProperty("blood_donation", 1);
+            json_message.addProperty("bloodtype", bloodtype);
+
+            String json_message_string = json_message.toString();
+
+            try {
+                emt.addMessageFromJSON(json_message_string);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(sendMessageToDoctor.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
+        response.getWriter().write(Arrays.toString(ids));
         response.setStatus(200);
     }
 

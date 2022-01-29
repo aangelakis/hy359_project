@@ -1,0 +1,30 @@
+<h1>
+    Blood Donation Emergency Message
+</h1>
+
+<!-- Blood types -->
+<select id="bloodtype" name="bloodtype" class="form-control" required>
+    <option value="" selected disabled>Blood Type...</option>
+    <option value="A+">A+ </option>
+    <option value="A-">A- </option>
+    <option value="B+">B+ </option>
+    <option value="B-">B- </option>
+    <option value="AB+">AB+ </option>
+    <option value="AB-">AB- </option>
+    <option value="0+">0+ </option>
+    <option value="0-">0- </option>
+</select>
+
+<div class="row">
+    <div class="form-group green-border-focus col-md-12">
+        <br><label for="emergencytext">Message</label><br>
+        <textarea id="emergencytext" class="form-control" name="emergencytext" rows="4"></textarea>
+    </div>
+</div>
+
+<button class="btn btn-dark" id="emergency_but" onclick="sendEmergencyMessage()">Send Message</button>
+
+<div id="emergency_err">
+    
+</div>
+

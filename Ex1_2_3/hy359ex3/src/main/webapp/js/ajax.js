@@ -38,7 +38,6 @@ function loginPOST() {
                 user_lat = json['lat'];
                 alertUser();
                 interval = setInterval(alertUser, 1000 * 60 * 10);
-
             }
 
             
@@ -72,6 +71,18 @@ function alertUser() {
     xhr.open('GET', 'alertUser');
     xhr.send();
     //interval = setInterval(alertUser, 1000*5);
+}
+
+function alertUserEmergency(ids){
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var json = JSON.parse(xhr.responseText);
+            alert('Emergency! We need blood as soon as possible.');
+        }
+    };
+    xhr.open('POST', 'alertUserEmergency');
+    xhr.send(ids);
 }
 
 function isLoggedIn() {
@@ -340,6 +351,20 @@ function createTableFromJSONGiveTreatment(data) {
     }
     html += "</table>";
     html += "<button class='btn btn-dark' id='" + data['randevouz_id'] + "' onclick='showTreatmentForm()'> Give Treatment " + "</button>";
+    html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
+    return html;
+}
+
+function createTableFromJSONDoctorInbox(data){
+    var html = "<table class=" + "table table-dark" + "><tr><th>Category</th><th>Value</th></tr>";
+    for (const x in data) {
+        var category = x;
+        var value = data[x];
+        html += "<tr><td>" + category + "</td><td>" + value + "</td></tr>";
+    }
+    html += "</table>";
+    html += "<button class='btn btn-dark' id='" + data['message_id'] + "' onclick='composeMessageToUser(" + data['user_id'] + ")'> Reply " + "</button>";
+    html += "<div id='" + data['user_id'] + "mes_div'></div>";
     html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
     return html;
 }
@@ -879,6 +904,40 @@ function composeMessageToDoctor(id) {
     document.getElementById(id + "mes_div").innerHTML = html;
 }
 
+function composeMessageToUser(id) {
+
+    var html = "<br><label for='messagetext'>Message</label><br><textarea id='messagetext' class='form-control' rows='4'></textarea>";
+    html += "<button class='btn btn-dark' id='" + id + "_pickmes' onclick='sendMessageToUser(" + id + ")'> Send message to User " + "</button>";
+    html += "<div id='" + id + "_divmes'></div>";
+    document.getElementById(id + "mes_div").innerHTML = html;
+}
+
+function sendEmergencyMessage(){
+    var xhr = new XMLHttpRequest();
+    
+    xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            const responseData = JSON.parse(xhr.responseText);
+            console.log(responseData);
+            document.getElementById("emergency_err").innerHTML = "<br><h3>Succesfully sent." + "</h3><br>";
+            document.getElementById("emergency_but").disabled = "true";
+            document.getElementById("emergencytext").readOnly = true;
+            setTimeout(alertUserEmergency(responseData), 1000 * 60);
+        } else {
+            document.getElementById("emergency_err").innerHTML = "<br><h3>There was an error sending your message." + "</h3>";
+        }
+    };
+    
+    let text = {};
+    text["bloodtype"] = document.getElementById("bloodtype").value;
+    text["message"] = document.getElementById("emergencytext").value;
+    var JSONdata = JSON.stringify(text);
+    console.log(JSONdata);
+    xhr.open('POST', 'sendEmergencyMessage');
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.send(JSONdata);
+}
+
 function sendMessageToDoctor(id) {
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
@@ -897,6 +956,28 @@ function sendMessageToDoctor(id) {
     var JSONdata = JSON.stringify(text);
     console.log(JSONdata);
     xhr.open('POST', 'sendMessageToDoctor');
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.send(JSONdata);
+}
+
+function sendMessageToUser(id) {
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            document.getElementById(id + "_divmes").innerHTML = "<br><h3>Succesfully sent." + "</h3><br>";
+            document.getElementById(id + "_pickmes").disabled = "true";
+            document.getElementById("messagetext").readOnly = true;
+        } else {
+            document.getElementById(id + "_divmes").innerHTML = "<br><h3>There was an error sending your message." + "</h3>";
+        }
+    };
+    console.log(id);
+    let text = {};
+    text["id"] = id;
+    text["message"] = document.getElementById("messagetext").value;
+    var JSONdata = JSON.stringify(text);
+    console.log(JSONdata);
+    xhr.open('POST', 'sendMessageToUser');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send(JSONdata);
 }
@@ -961,7 +1042,7 @@ function getInboxMessagesDoctor() {
             $('#ajax_form').append("<h3>" + count + " Messages </h3>");
             for (id in obj) {
                 // delete obj[id]['user_id'];
-                $('#ajax_form').append(createTableFromJSON(obj[id]));
+                $('#ajax_form').append(createTableFromJSONDoctorInbox(obj[id]));
             }
 
         } else if (xhr.status !== 200) {
@@ -1080,6 +1161,10 @@ function showTreatments(id) {
     xhr.open('POST', 'getTreatment');
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send(JSONdata);
+}
+
+function showEmergency(){
+    $("#ajax_form").load("emergencyMessage.html");
 }
 
 

@@ -104,6 +104,18 @@
         <servlet-name>alertUser</servlet-name>
         <servlet-class>Servlets.alertUser</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>sendMessageToUser</servlet-name>
+        <servlet-class>Servlets.sendMessageToUser</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>sendEmergencyMessage</servlet-name>
+        <servlet-class>Servlets.sendEmergencyMessage</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>alertUserEmergency</servlet-name>
+        <servlet-class>Servlets.alertUserEmergency</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Register</servlet-name>
         <url-pattern>/Register</url-pattern>
@@ -207,6 +219,18 @@
     <servlet-mapping>
         <servlet-name>alertUser</servlet-name>
         <url-pattern>/alertUser</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>sendMessageToUser</servlet-name>
+        <url-pattern>/sendMessageToUser</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>sendEmergencyMessage</servlet-name>
+        <url-pattern>/sendEmergencyMessage</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>alertUserEmergency</servlet-name>
+        <url-pattern>/alertUserEmergency</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

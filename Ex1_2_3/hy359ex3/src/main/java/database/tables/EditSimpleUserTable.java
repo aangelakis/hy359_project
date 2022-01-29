@@ -79,6 +79,27 @@ public class EditSimpleUserTable {
         return null;
     }
 
+    public SimpleUser databaseToSimpleUserId(int user_id) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+
+        ResultSet rs;
+        try {
+            rs = stmt.executeQuery("SELECT * FROM users WHERE user_id='" + user_id + "'");
+            rs.next();
+            String json = DB_Connection.getResultsToJSON(rs);
+            Gson gson = new Gson();
+            SimpleUser user = gson.fromJson(json, SimpleUser.class);
+            return user;
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+        stmt.close();
+        con.close();
+        return null;
+    }
+
     public void updateSimpleUserAll(JsonObject json) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();
         Statement stmt = con.createStatement();
@@ -148,6 +169,30 @@ public class EditSimpleUserTable {
         ResultSet rs;
         try {
             rs = stmt.executeQuery("SELECT * FROM users");
+            while (rs.next()) {
+                String json = DB_Connection.getResultsToJSON(rs);
+                Gson gson = new Gson();
+                SimpleUser user = gson.fromJson(json, SimpleUser.class);
+                users.add(user);
+            }
+            return users;
+
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+        stmt.close();
+        con.close();
+        return null;
+    }
+
+    public ArrayList<SimpleUser> databaseToSimpleUsersBloodtypes(String bloodtype) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        ArrayList<SimpleUser> users = new ArrayList<SimpleUser>();
+        ResultSet rs;
+        try {
+            rs = stmt.executeQuery("SELECT * FROM users WHERE bloodtype='" + bloodtype + "' AND blooddonor='1'");
             while (rs.next()) {
                 String json = DB_Connection.getResultsToJSON(rs);
                 Gson gson = new Gson();
