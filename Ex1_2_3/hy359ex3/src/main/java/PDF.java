@@ -1,7 +1,6 @@
 
-import com.itextpdf.text.BadElementException;
+/*import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Phrase;
@@ -13,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.stream.Stream;
+import javax.swing.text.Document;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -24,7 +24,7 @@ import java.util.stream.Stream;
  *
  * @author ΜΙΧΑΛΗΣ
  */
-public class PDF {
+/*public class PDF {
 
     public static void main(String[] args) throws FileNotFoundException, DocumentException, URISyntaxException, BadElementException, IOException {
         Document document = new Document();
@@ -71,3 +71,4 @@ public class PDF {
         table.addCell(verticalAlignCell);
     }
 }
+*/

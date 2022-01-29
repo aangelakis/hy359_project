@@ -916,8 +916,8 @@ function getSentMessagesDoctor() {
         if (xhr.readyState === 4 && xhr.status === 200) {
 
             $('#ajax_form').html("<h1>My Messages</h1><br>");
-            var html = "<button style='margin-left:5px' class='btn btn-dark' id='inbox_mes' onclick='getInboxMessages()'>Inbox</button>";
-            html += "<button style='margin-left:5px' class='btn btn-dark' id='sent_mes' onclick='getSentMessages()'>Sent</button>";
+            var html = "<button style='margin-left:5px' class='btn btn-dark' id='inbox_mes' onclick='getInboxMessagesDoctor()'>Inbox</button>";
+            html += "<button style='margin-left:5px' class='btn btn-dark' id='sent_mes' onclick='getSentMessagesDoctor()'>Sent</button>";
             $("#ajax_form").append(html);
             const obj = JSON.parse(xhr.responseText);
             console.log(obj);
