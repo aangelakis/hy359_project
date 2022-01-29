@@ -199,9 +199,15 @@ public class updateRandevouz extends HttpServlet {
                 status = obj.get("status").getAsString();
             }
 
-            ert.updateRandevouzDoctor(obj.get("randevouz_id").getAsInt(), date_time, price, doc_info, status);
+            if (!ran.getStatus().equals("done")) {
+                ert.updateRandevouzDoctor(obj.get("randevouz_id").getAsInt(), date_time, price, doc_info, status);
+                response.setStatus(200);
+            } else {
+                response.getWriter().write("You cannot change a done randevouz");
+                response.setStatus(403);
+                return;
+            }
 
-            response.setStatus(200);
 
         } catch (SQLException ex) {
             Logger.getLogger(addRandevouz.class.getName()).log(Level.SEVERE, null, ex);

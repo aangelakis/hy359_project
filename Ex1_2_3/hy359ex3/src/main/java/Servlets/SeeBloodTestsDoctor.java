@@ -92,8 +92,6 @@ public class SeeBloodTestsDoctor extends HttpServlet {
         String data = jc.getJSONFromAjax(request.getReader());
         JsonObject dataObj = gson.fromJson(data, JsonObject.class);
 
-
-
         EditSimpleUserTable est = new EditSimpleUserTable();
         EditRandevouzTable ert = new EditRandevouzTable();
         EditBloodTestTable ebt = new EditBloodTestTable();
