@@ -189,12 +189,7 @@ function createTableFromJSONSeeRandevouzDoctor(data) {
         html += "<tr><td>" + category + "</td><td>" + value + "</td></tr>";
     }
     html += "</table>";
-    
-    if(data['status'] === 'done') {
-        html += "<button class='btn btn-dark' id='" + data['doctor_id'] + "' onclick='composeMessageToUser(" + data['username'] + ")'> Compose Message to User " + "</button>";
-        html += "<div id='" + data['doctor_id'] + "_div'></div>";
-        html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
-    }
+    html += "<hr size=" + "8" + "width=" + "90%" + "color=" + "red>";
     return html;
 }
 
