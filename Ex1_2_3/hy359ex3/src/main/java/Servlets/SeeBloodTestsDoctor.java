@@ -22,6 +22,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import mainClasses.BloodTest;
 import mainClasses.JSON_Converter;
 import mainClasses.Randevouz;
@@ -100,18 +101,28 @@ public class SeeBloodTestsDoctor extends HttpServlet {
 
             String user = est.databaseUserToJSONUsername(dataObj.get("username").getAsString());
 
+            HttpSession session = request.getSession();
+            String JSON_doctor = (String) session.getAttribute("loggedIn");
+
+            System.out.println(JSON_doctor);
+
             if (user == null) {
                 response.setStatus(403);
                 response.getWriter().write("User could not be found");
                 return;
             }
             JsonObject userObj = gson.fromJson(user, JsonObject.class);
+            JsonObject docObj = gson.fromJson(JSON_doctor, JsonObject.class);
+
+
             ArrayList<Randevouz> randevouz = new ArrayList<Randevouz>();
 
             randevouz = ert.databaseToRandevouzUserID(userObj.get("user_id").getAsInt());
             for (Randevouz ra : randevouz) {
-                if ("done".equals(ra.getStatus())) {
-                    count++;
+                if (ra.getDoctor_id() == docObj.get("doctor_id").getAsInt()) {
+                    if ("done".equals(ra.getStatus())) {
+                        count++;
+                    }
                 }
             }
 
