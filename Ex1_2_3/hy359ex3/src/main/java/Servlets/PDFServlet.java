@@ -5,15 +5,22 @@
  */
 package Servlets;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -29,7 +36,8 @@ import mainClasses.JSON_Converter;
 public class PDFServlet extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -84,6 +92,11 @@ public class PDFServlet extends HttpServlet {
         JSON_Converter jc = new JSON_Converter();
         String json = jc.getJSONFromAjax(request.getReader());
 
+        JsonParser parser = new JsonParser();
+        JsonElement tradeElement = parser.parse(json);
+        JsonArray jsonArr = tradeElement.getAsJsonArray();
+
+        System.out.println(jsonArr);
 
         Document document = new Document();
         try {
@@ -94,8 +107,22 @@ public class PDFServlet extends HttpServlet {
         }
 
         document.open();
+
+        PdfPTable table = new PdfPTable(8);
+        float[] widths = new float[]{50f, 65f, 60f, 40f, 20f, 50f, 50f, 25f};
         try {
-            document.add(new Paragraph(json));
+            table.setWidths(widths);
+        } catch (DocumentException ex) {
+            Logger.getLogger(PDFServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        table.setWidthPercentage(110);
+
+        addTableHeader(table);
+        addCustomRows(table, jsonArr);
+
+        try {
+            document.add(table);
         } catch (DocumentException ex) {
             Logger.getLogger(PDFServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -112,4 +139,31 @@ public class PDFServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
+    private void addTableHeader(PdfPTable table) {
+        Stream.of("randevouz_id", "doctor_username", "user_username", "date_time", "price", "doctor_info", "user_info", "status")
+                .forEach(columnTitle -> {
+                    PdfPCell header = new PdfPCell();
+            header.setBorderWidth(2);
+            header.setPhrase(new Phrase(columnTitle));
+                    table.addCell(header);
+                });
+    }
+
+    private void addCustomRows(PdfPTable table, JsonArray ja) {
+        for (int i = 0; i < ja.size(); i++) {
+            JsonObject propertiesJson = ja.get(i).getAsJsonObject();
+            String[] properties = new String[8];
+            properties[0] = propertiesJson.get("randevouz_id").getAsString();
+            properties[1] = propertiesJson.get("doctor_username").getAsString();
+            properties[2] = propertiesJson.get("user_username").getAsString();
+            properties[3] = propertiesJson.get("date_time").getAsString();
+            properties[4] = propertiesJson.get("price").getAsString();
+            properties[5] = propertiesJson.get("doctor_info").getAsString();
+            properties[6] = propertiesJson.get("user_info").getAsString();
+            properties[7] = propertiesJson.get("status").getAsString();
+            for (int j = 0; j < 8; j++) {
+                table.addCell(properties[j]);
+            }
+        }
+    }
 }
