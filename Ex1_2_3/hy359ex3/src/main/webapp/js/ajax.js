@@ -17,7 +17,7 @@
 var randevouzID_button;
 var user_lon;
 var user_lat;
-var interval;
+var interval, emergency_interval;
 function loginPOST() {
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
@@ -38,6 +38,8 @@ function loginPOST() {
                 user_lat = json['lat'];
                 alertUser();
                 interval = setInterval(alertUser, 1000 * 60 * 10);
+                alertUserEmergency();
+                emergency_interval = setInterval(alertUserEmergency, 1000 * 60 * 2);
             }
 
             
@@ -73,16 +75,16 @@ function alertUser() {
     //interval = setInterval(alertUser, 1000*5);
 }
 
-function alertUserEmergency(ids){
+function alertUserEmergency(){
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            var json = JSON.parse(xhr.responseText);
-            alert('Emergency! We need blood as soon as possible.');
+            //var json = JSON.parse(xhr.responseText);
+            alert('You have new messages. Go to your messages to see them!');
         }
     };
-    xhr.open('POST', 'alertUserEmergency');
-    xhr.send(ids);
+    xhr.open('GET', 'alertUserEmergency');
+    xhr.send();
 }
 
 function isLoggedIn() {
@@ -101,6 +103,8 @@ function isLoggedIn() {
                 user_lat = responseData['lat'];
                 alertUser();
                 interval = setInterval(alertUser, 1000 * 60 * 10);
+                alertUserEmergency();
+                emergency_interval = setInterval(alertUserEmergency, 1000 * 60 * 2);
 
                 //interval = setInterval(alertUser(), 1000*3);
                 //setInterval(alertUser(), 1000 * 36000);
@@ -130,6 +134,7 @@ function logout() {
             $("#ajax_form").html("<h1>Successful Logout</h1><br>");
             $("#ajax_update").hide();
             clearInterval(interval);
+            clearInterval(emergency_interval);
         } else if (xhr.status !== 200) {
             alert('Request failed. Returned status of ' + xhr.status);
         }
@@ -917,7 +922,6 @@ function sendEmergencyMessage(){
             document.getElementById("emergency_err").innerHTML = "<br><h3>Succesfully sent." + "</h3><br>";
             document.getElementById("emergency_but").disabled = "true";
             document.getElementById("emergencytext").readOnly = true;
-            setTimeout(alertUserEmergency(responseData), 1000 * 60);
         } else {
             document.getElementById("emergency_err").innerHTML = "<br><h3>There was an error sending your message." + "</h3>";
         }
