@@ -97,7 +97,7 @@ public class alertUser extends HttpServlet {
                 timeString = date_time.substring(11, 19);
                 time = LocalTime.parse(timeString);
 
-                if (time_now.until(time, ChronoUnit.HOURS) <= 4 && date_now.equals(date)) {
+                if (time_now.until(time, ChronoUnit.HOURS) <= 4 && date_now.equals(date) && randevouz.get(i).getStatus().equals("selected")) {
                     System.out.println(time_now + " " + time);
                     alert = true;
                     break;
