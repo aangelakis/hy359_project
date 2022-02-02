@@ -2215,3 +2215,18 @@ function amka_check() {
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send(lol);
 }
+
+function create_pdf() {
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            
+        } else if (xhr.status !== 200) {
+            
+        }
+    };
+   
+    xhr.open('GET', 'PDFServlet');
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.send();
+}
