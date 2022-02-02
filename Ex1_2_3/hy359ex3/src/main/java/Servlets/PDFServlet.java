@@ -5,13 +5,21 @@
  */
 package Servlets;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import mainClasses.JSON_Converter;
 
 /**
  *
@@ -57,7 +65,7 @@ public class PDFServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        // processRequest(request, response);
     }
 
     /**
@@ -71,7 +79,27 @@ public class PDFServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        // processRequest(request, response);
+
+        JSON_Converter jc = new JSON_Converter();
+        String json = jc.getJSONFromAjax(request.getReader());
+
+
+        Document document = new Document();
+        try {
+            PdfWriter.getInstance(document, new FileOutputStream("d:/Randevouz.pdf"));
+
+        } catch (DocumentException ex) {
+            Logger.getLogger(PDFServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        document.open();
+        try {
+            document.add(new Paragraph(json));
+        } catch (DocumentException ex) {
+            Logger.getLogger(PDFServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        document.close();
     }
 
     /**

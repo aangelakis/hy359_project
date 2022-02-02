@@ -1197,14 +1197,16 @@ function seeRandevouz() {
                     }
                 }
             }
-
-            $("#ajax_form").html("");
+            
+            
+            $("#ajax_form").html("<button class='btn btn-dark' id='" + "pdf_button" + "'onclick='create_pdf(" + xhr.responseText + ")'>Download PDF " + "</button>");
+            $("#ajax_form").append("<br>");
             for (let randevouz in responseData) {
                 var json = {};
                 for (let x in responseData[randevouz]) {
                     json[x] = responseData[randevouz][x];
                 }
-
+                
                 $("#ajax_form").append("<br>");
                 $('#ajax_form').append(createTableFromJSONSeeRandevouzDoctor(json));
                 $('#ajax_form').show();
@@ -2216,7 +2218,8 @@ function amka_check() {
     xhr.send(lol);
 }
 
-function create_pdf() {
+function create_pdf(input) {
+    console.log(input);
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
@@ -2226,7 +2229,9 @@ function create_pdf() {
         }
     };
    
-    xhr.open('GET', 'PDFServlet');
-    xhr.setRequestHeader("Content-type", "application/json");
-    xhr.send();
+    var jsonData = JSON.stringify(input,null,'\t');
+    console.log(jsonData);
+    xhr.open('POST', 'PDFServlet');
+   // xhr.setRequestHeader("Content-type", "text/html");
+    xhr.send(jsonData);
 }
