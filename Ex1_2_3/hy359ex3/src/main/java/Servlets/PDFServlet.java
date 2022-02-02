@@ -109,7 +109,7 @@ public class PDFServlet extends HttpServlet {
         document.open();
 
         PdfPTable table = new PdfPTable(8);
-        float[] widths = new float[]{50f, 65f, 60f, 40f, 20f, 50f, 50f, 25f};
+        float[] widths = new float[]{50f, 65f, 60f, 47f, 20f, 50f, 50f, 35f};
         try {
             table.setWidths(widths);
         } catch (DocumentException ex) {
